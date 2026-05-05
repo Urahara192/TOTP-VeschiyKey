@@ -1,1 +1,39 @@
 AGENTS.md
+
+# Node
+node_modules/
+dist/
+.vite/
+.cache/
+*.tsbuildinfo
+npm-debug.log*
+
+# Go
+backend/server
+backend/*.exe
+*.exe
+*.out
+*.test
+
+# Environment
+.env
+.env.local
+.env.production
+.env.development
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Docker
+.docker/
