@@ -3,10 +3,23 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"net"
 	"net/http"
+	"strings"
 
 	"totp-auth-system/backend/internal/application/usecase"
 )
+
+func getClientIP(r *http.Request) string {
+	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+		return strings.Split(fwd, ",")[0]
+	}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return host
+}
 
 type AuthHandler struct {
 	authUsecase *usecase.AuthUsecase
@@ -32,16 +45,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "username, email, and password are required")
 		return
 	}
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = fwd
-	}
 	ctx := r.Context()
 	output, err := h.authUsecase.Register(ctx, usecase.RegisterInput{
 		Username:  req.Username,
 		Email:     req.Email,
 		Password:  req.Password,
-		IP:        ip,
+		IP:        getClientIP(r),
 		UserAgent: r.Header.Get("User-Agent"),
 	})
 	if err != nil {
@@ -61,6 +70,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 			"username": output.User.Username,
 			"email":    output.User.Email,
 			"role":     output.User.Role,
+			"totp_enabled": output.User.TOTPEnabled,
 		},
 	})
 }
@@ -80,14 +90,10 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "username and password are required")
 		return
 	}
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = fwd
-	}
 	output, err := h.authUsecase.Login(r.Context(), usecase.LoginInput{
 		Username:  req.Username,
 		Password:  req.Password,
-		IP:        ip,
+		IP:        getClientIP(r),
 		UserAgent: r.Header.Get("User-Agent"),
 	})
 	if err != nil {
@@ -115,6 +121,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			"username": output.User.Username,
 			"email":    output.User.Email,
 			"role":     output.User.Role,
+			"totp_enabled": output.User.TOTPEnabled,
 		},
 	})
 }
@@ -135,23 +142,19 @@ func (h *AuthHandler) Verify2FA(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "username and code are required")
 		return
 	}
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = fwd
-	}
 	output, err := h.authUsecase.Verify2FA(r.Context(), usecase.Verify2FAInput{
 		Username:    req.Username,
 		Code:        req.Code,
-		IP:          ip,
+		IP:          getClientIP(r),
 		UserAgent:   r.Header.Get("User-Agent"),
 		TrustDevice: req.TrustDevice,
 	})
 	if err != nil {
 		switch {
 		case errors.Is(err, usecase.ErrInvalidTOTP):
-			jsonError(w, http.StatusUnauthorized, "invalid TOTP code")
+			jsonError(w, http.StatusBadRequest, "invalid TOTP code")
 		case errors.Is(err, usecase.ErrUserNotFound):
-			jsonError(w, http.StatusUnauthorized, "user not found")
+			jsonError(w, http.StatusBadRequest, "user not found")
 		case errors.Is(err, usecase.ErrTOTPNotEnabled):
 			jsonError(w, http.StatusBadRequest, "2FA is not enabled")
 		default:

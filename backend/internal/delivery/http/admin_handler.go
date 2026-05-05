@@ -77,7 +77,7 @@ func (h *AdminHandler) ChangeRole(w http.ResponseWriter, r *http.Request) {
 	}
 	newRole := domain.Role(req.Role)
 	switch newRole {
-	case domain.RoleAdmin, domain.RoleAccountant, domain.RoleEmployee:
+	case domain.RoleAdmin, domain.RoleAccountant, domain.RoleEmployee, domain.RoleDirector, domain.RoleAnalyst:
 	default:
 		jsonError(w, http.StatusBadRequest, "invalid role")
 		return

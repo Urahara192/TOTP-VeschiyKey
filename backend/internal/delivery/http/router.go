@@ -50,10 +50,11 @@ func (ro *Router) registerRoutes(deps *HandlerDependencies) {
 	ro.mux.Handle("GET /totp/status", m.Auth(http.HandlerFunc(deps.TOTPHandler.Status)))
 
 	adminOnly := m.Role("admin")
-	ro.mux.Handle("GET /admin/users", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ListUsers))))
+	adminOrDirector := m.Role("admin", "director")
+	ro.mux.Handle("GET /admin/users", m.Auth(adminOrDirector(http.HandlerFunc(deps.AdminHandler.ListUsers))))
 	ro.mux.Handle("PUT /admin/users/", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ChangeRole))))
 	ro.mux.Handle("POST /admin/users/", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.Reset2FA))))
-	ro.mux.Handle("GET /admin/logs", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.GetLogs))))
+	ro.mux.Handle("GET /admin/logs", m.Auth(adminOrDirector(http.HandlerFunc(deps.AdminHandler.GetLogs))))
 
 	ro.mux.Handle("GET /static/", http.FileServer(http.FS(staticAssets())))
 	ro.mux.HandleFunc("GET /", serveIndex)
