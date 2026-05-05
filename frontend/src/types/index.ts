@@ -2,7 +2,7 @@ export interface User {
   id: string
   username: string
   email: string
-  role: 'admin' | 'accountant' | 'employee'
+  role: 'admin' | 'accountant' | 'employee' | 'director' | 'analyst'
   totp_enabled: boolean
   created_at: string
 }

@@ -54,7 +54,10 @@ export function useTOTP() {
   }, [generateCodes])
 
   const addAccount = useCallback((acc: TOTPAccount) => {
-    setAccounts((prev) => [...prev, acc])
+    setAccounts((prev) => {
+      if (prev.some((a) => a.secret === acc.secret)) return prev
+      return [...prev, acc]
+    })
   }, [])
 
   const removeAccount = useCallback((id: string) => {

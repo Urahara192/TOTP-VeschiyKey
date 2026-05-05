@@ -19,10 +19,15 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config
     if (error.response?.status === 401 && !original._retry) {
+      if (original.url?.includes('/auth/verify-2fa')) {
+        return Promise.reject(error)
+      }
+      const refreshToken = localStorage.getItem('refresh_token')
+      if (!refreshToken) {
+        return Promise.reject(error)
+      }
       original._retry = true
       try {
-        const refreshToken = localStorage.getItem('refresh_token')
-        if (!refreshToken) throw new Error('no refresh token')
         const { data } = await axios.post('/auth/refresh', { refresh_token: refreshToken })
         localStorage.setItem('access_token', data.data.access_token)
         localStorage.setItem('refresh_token', data.data.refresh_token)

@@ -21,14 +21,14 @@ export default function PWAApp() {
       <header className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Smartphone className="h-5 w-5 text-slate-100" />
-          <h1 className="text-lg font-semibold text-slate-100">TOTP Authenticator</h1>
+          <h1 className="text-lg font-semibold text-slate-100">Вещий Ключ</h1>
         </div>
       </header>
 
       <Tabs defaultValue="codes">
         <TabsList className="w-full">
-          <TabsTrigger value="codes" className="flex-1">Codes</TabsTrigger>
-          <TabsTrigger value="add" className="flex-1">Add Account</TabsTrigger>
+          <TabsTrigger value="codes" className="flex-1">Коды</TabsTrigger>
+          <TabsTrigger value="add" className="flex-1">Добавить аккаунт</TabsTrigger>
         </TabsList>
 
         <TabsContent value="codes">
@@ -41,7 +41,7 @@ export default function PWAApp() {
                   style={{ width: `${(timeLeft / 30) * 100}%` }}
                 />
               </div>
-              <p className="mt-1 text-center text-xs text-slate-500">{timeLeft}s remaining</p>
+              <p className="mt-1 text-center text-xs text-slate-500">осталось {timeLeft}с</p>
             </div>
           )}
         </TabsContent>

@@ -16,9 +16,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'TOTP Authenticator',
+        name: 'Вещий Ключ',
         short_name: 'TOTP Auth',
-        description: 'Corporate 2FA Authenticator',
+        description: 'Корпоративный TOTP-генератор',
         theme_color: '#0f172a',
         icons: [
           {

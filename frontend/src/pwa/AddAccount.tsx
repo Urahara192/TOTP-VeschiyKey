@@ -45,7 +45,7 @@ export default function AddAccount({ onAdd }: Props) {
         () => {}
       )
     } catch {
-      setError('Camera access denied or not available')
+      setError('Доступ к камере запрещён или недоступен')
       setScanning(false)
     }
   }
@@ -54,7 +54,7 @@ export default function AddAccount({ onAdd }: Props) {
     try {
       const url = new URL(uri)
       if (url.protocol !== 'otpauth:' || url.host !== 'totp') {
-        setError('Invalid TOTP URI')
+        setError('Некорректный TOTP URI')
         return
       }
       const secretVal = url.searchParams.get('secret') || ''
@@ -67,13 +67,13 @@ export default function AddAccount({ onAdd }: Props) {
         issuer: issuerVal,
       })
     } catch {
-      setError('Invalid QR code')
+      setError('Некорректный QR-код')
     }
   }
 
   function handleManualAdd() {
     if (!label || !secret) {
-      setError('Label and secret are required')
+      setError('Название и секретный ключ обязательны')
       return
     }
     onAdd({
@@ -92,18 +92,18 @@ export default function AddAccount({ onAdd }: Props) {
       <CardContent className="p-4">
         <Tabs value={method} onValueChange={(v) => setMethod(v as 'scan' | 'manual')}>
           <TabsList className="w-full">
-            <TabsTrigger value="scan" className="flex-1"><Scan className="mr-2 h-4 w-4" /> Scan QR</TabsTrigger>
-            <TabsTrigger value="manual" className="flex-1"><Key className="mr-2 h-4 w-4" /> Manual</TabsTrigger>
+            <TabsTrigger value="scan" className="flex-1"><Scan className="mr-2 h-4 w-4" /> Сканировать QR</TabsTrigger>
+            <TabsTrigger value="manual" className="flex-1"><Key className="mr-2 h-4 w-4" /> Вручную</TabsTrigger>
           </TabsList>
 
           <TabsContent value="scan">
             {!scanning ? (
               <div className="flex flex-col items-center gap-4 py-6">
                 <p className="text-sm text-slate-400 text-center">
-                  Point your camera at the QR code displayed on the setup page
+                  Направьте камеру на QR-код со страницы настройки
                 </p>
                 <Button onClick={startScanning}>
-                  <Scan className="mr-2 h-4 w-4" /> Start Scanner
+                  <Scan className="mr-2 h-4 w-4" /> Запустить сканер
                 </Button>
                 {error && <p className="text-xs text-red-400">{error}</p>}
               </div>
@@ -111,7 +111,7 @@ export default function AddAccount({ onAdd }: Props) {
               <div className="space-y-4">
                 <div id="qr-reader" className="mx-auto w-full max-w-sm overflow-hidden rounded-lg" />
                 <Button variant="outline" className="w-full" onClick={() => setScanning(false)}>
-                  Cancel
+                  Отмена
                 </Button>
               </div>
             )}
@@ -120,20 +120,20 @@ export default function AddAccount({ onAdd }: Props) {
           <TabsContent value="manual">
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="ilabel">Label</Label>
+                <Label htmlFor="ilabel">Название</Label>
                 <Input id="ilabel" placeholder="user@example.com" value={label} onChange={(e) => setLabel(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="isecret">Secret Key</Label>
+                <Label htmlFor="isecret">Секретный ключ</Label>
                 <Input id="isecret" placeholder="JBSWY3DPEHPK3PXP" value={secret} onChange={(e) => setSecret(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="iissuer">Issuer</Label>
+                <Label htmlFor="iissuer">Эмитент</Label>
                 <Input id="iissuer" placeholder="TOTP Auth" value={issuer} onChange={(e) => setIssuer(e.target.value)} />
               </div>
               {error && <p className="text-xs text-red-400">{error}</p>}
               <Button className="w-full" onClick={handleManualAdd}>
-                Add Account
+                Добавить аккаунт
               </Button>
             </div>
           </TabsContent>

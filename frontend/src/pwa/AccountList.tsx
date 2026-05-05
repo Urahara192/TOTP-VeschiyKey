@@ -11,8 +11,8 @@ export default function AccountList() {
       <Card>
         <CardContent className="flex flex-col items-center gap-4 py-12">
           <Smartphone className="h-12 w-12 text-slate-600" />
-          <p className="text-sm text-slate-400">No accounts added yet</p>
-          <p className="text-xs text-slate-500">Add an account by scanning a QR code or entering a secret key</p>
+          <p className="text-sm text-slate-400">Аккаунты не добавлены</p>
+          <p className="text-xs text-slate-500">Добавьте аккаунт, отсканировав QR-код или введя секретный ключ</p>
         </CardContent>
       </Card>
     )

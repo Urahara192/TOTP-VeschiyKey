@@ -6,6 +6,7 @@ import Setup2FA from '@/pages/Setup2FA'
 import Verify2FA from '@/pages/Verify2FA'
 import Dashboard from '@/pages/Dashboard'
 import Admin from '@/pages/Admin'
+import ResourcePage from '@/pages/ResourcePage'
 import PWAApp from '@/pwa/PWAApp'
 
 export default function App() {
@@ -32,10 +33,18 @@ export default function App() {
             }
           />
           <Route
+            path="/resource/:name"
+            element={
+              <ProtectedRoute>
+                <ResourcePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin"
             element={
               <ProtectedRoute>
-                <RoleGuard role="admin">
+                <RoleGuard roles={['admin', 'director']}>
                   <Admin />
                 </RoleGuard>
               </ProtectedRoute>
