@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"totp-auth-system/backend/internal/application/usecase"
+	"totp-auth-system/backend/internal/infrastructure/auth"
 )
 
 func getClientIP(r *http.Request) string {
@@ -202,6 +203,74 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		"access_token":  output.AccessToken,
 		"refresh_token": output.RefreshToken,
 	})
+}
+
+func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
+	userIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	userID, err := parseUUID(userIDStr)
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	user, err := h.authUsecase.GetProfile(r.Context(), userID)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, "failed to get profile")
+		return
+	}
+	jsonData(w, http.StatusOK, map[string]interface{}{
+		"user": map[string]interface{}{
+			"id":          user.ID.String(),
+			"username":    user.Username,
+			"email":       user.Email,
+			"last_name":   user.LastName,
+			"first_name":  user.FirstName,
+			"middle_name": user.MiddleName,
+			"role":        string(user.Role),
+			"totp_enabled": user.TOTPEnabled,
+			"created_at":  user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		},
+	})
+}
+
+type updateMeRequest struct {
+	Email      *string `json:"email,omitempty"`
+	LastName   *string `json:"last_name,omitempty"`
+	FirstName  *string `json:"first_name,omitempty"`
+	MiddleName *string `json:"middle_name,omitempty"`
+}
+
+func (h *AuthHandler) UpdateMe(w http.ResponseWriter, r *http.Request) {
+	userIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	userID, err := parseUUID(userIDStr)
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	var req updateMeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Email == nil && req.LastName == nil && req.FirstName == nil && req.MiddleName == nil {
+		jsonError(w, http.StatusBadRequest, "at least one field to update is required")
+		return
+	}
+	if err := h.authUsecase.UpdateProfile(r.Context(), usecase.UpdateProfileInput{
+		UserID:     userID,
+		Email:      req.Email,
+		LastName:   req.LastName,
+		FirstName:  req.FirstName,
+		MiddleName: req.MiddleName,
+	}); err != nil {
+		switch {
+		case err == usecase.ErrEmailTaken:
+			jsonError(w, http.StatusConflict, "email already taken")
+		default:
+			jsonError(w, http.StatusInternalServerError, "failed to update profile")
+		}
+		return
+	}
+	jsonData(w, http.StatusOK, map[string]string{"message": "profile updated"})
 }
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {

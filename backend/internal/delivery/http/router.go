@@ -43,6 +43,8 @@ func (ro *Router) registerRoutes(deps *HandlerDependencies) {
 	ro.mux.HandleFunc("POST /auth/verify-2fa", deps.AuthHandler.Verify2FA)
 	ro.mux.HandleFunc("POST /auth/refresh", deps.AuthHandler.Refresh)
 	ro.mux.HandleFunc("POST /auth/logout", deps.AuthHandler.Logout)
+	ro.mux.Handle("GET /auth/me", m.Auth(http.HandlerFunc(deps.AuthHandler.Me)))
+	ro.mux.Handle("PUT /auth/me", m.Auth(http.HandlerFunc(deps.AuthHandler.UpdateMe)))
 
 	ro.mux.Handle("POST /totp/setup", m.Auth(http.HandlerFunc(deps.TOTPHandler.Setup)))
 	ro.mux.Handle("POST /totp/enable", m.Auth(http.HandlerFunc(deps.TOTPHandler.Enable)))
