@@ -20,6 +20,9 @@ type User struct {
 	ID           uuid.UUID
 	Username     string
 	Email        string
+	LastName     string
+	FirstName    string
+	MiddleName   string
 	PasswordHash string
 	Role         Role
 	TOTPSecret   *string

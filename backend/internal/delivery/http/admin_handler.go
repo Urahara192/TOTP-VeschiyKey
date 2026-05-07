@@ -29,11 +29,14 @@ func (h *AdminHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type userResponse struct {
-		ID          string `json:"id"`
-		Username    string `json:"username"`
-		Email       string `json:"email"`
-		Role        string `json:"role"`
-		TOTPEnabled bool   `json:"totp_enabled"`
+		ID         string `json:"id"`
+		Username   string `json:"username"`
+		Email      string `json:"email"`
+		LastName   string `json:"last_name"`
+		FirstName  string `json:"first_name"`
+		MiddleName string `json:"middle_name"`
+		Role       string `json:"role"`
+		TOTPEnabled bool  `json:"totp_enabled"`
 		CreatedAt   string `json:"created_at"`
 	}
 	users := make([]userResponse, len(output.Users))
@@ -42,6 +45,9 @@ func (h *AdminHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 			ID:          u.ID.String(),
 			Username:    u.Username,
 			Email:       u.Email,
+			LastName:    u.LastName,
+			FirstName:   u.FirstName,
+			MiddleName:  u.MiddleName,
 			Role:        string(u.Role),
 			TOTPEnabled: u.TOTPEnabled,
 			CreatedAt:   u.CreatedAt.Format("2006-01-02T15:04:05Z"),
@@ -58,7 +64,7 @@ type changeRoleRequest struct {
 }
 
 func (h *AdminHandler) ChangeRole(w http.ResponseWriter, r *http.Request) {
-	userIDStr := extractPathParam(r.URL.Path, "/admin/users/", "/role")
+	userIDStr := r.PathValue("id")
 	if userIDStr == "" {
 		jsonError(w, http.StatusBadRequest, "user id required")
 		return
@@ -94,7 +100,7 @@ func (h *AdminHandler) ChangeRole(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AdminHandler) Reset2FA(w http.ResponseWriter, r *http.Request) {
-	userIDStr := extractPathParam(r.URL.Path, "/admin/users/", "/reset-2fa")
+	userIDStr := r.PathValue("id")
 	if userIDStr == "" {
 		jsonError(w, http.StatusBadRequest, "user id required")
 		return
@@ -111,6 +117,150 @@ func (h *AdminHandler) Reset2FA(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonData(w, http.StatusOK, map[string]string{"message": "2FA reset"})
+}
+
+type createUserRequest struct {
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	LastName   string `json:"last_name"`
+	FirstName  string `json:"first_name"`
+	MiddleName string `json:"middle_name"`
+	Password   string `json:"password"`
+	Role       string `json:"role"`
+}
+
+func (h *AdminHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var req createUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Username == "" || req.Email == "" || req.Password == "" {
+		jsonError(w, http.StatusBadRequest, "username, email, and password are required")
+		return
+	}
+	role := domain.Role(req.Role)
+	if req.Role == "" {
+		role = domain.RoleEmployee
+	}
+	switch role {
+	case domain.RoleAdmin, domain.RoleAccountant, domain.RoleEmployee, domain.RoleDirector, domain.RoleAnalyst:
+	default:
+		jsonError(w, http.StatusBadRequest, "invalid role")
+		return
+	}
+	actorIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	actorID, _ := parseUUID(actorIDStr)
+	user, err := h.adminUsecase.CreateUser(r.Context(), usecase.CreateUserInput{
+		Username:   req.Username,
+		Email:      req.Email,
+		LastName:   req.LastName,
+		FirstName:  req.FirstName,
+		MiddleName: req.MiddleName,
+		Password:   req.Password,
+		Role:       role,
+		ActorID:    actorID,
+		IP:         getClientIP(r),
+		UserAgent:  r.Header.Get("User-Agent"),
+	})
+	if err != nil {
+		switch {
+		case err == usecase.ErrUsernameTaken:
+			jsonError(w, http.StatusConflict, "username already taken")
+		case err == usecase.ErrEmailTaken:
+			jsonError(w, http.StatusConflict, "email already taken")
+		default:
+			jsonError(w, http.StatusInternalServerError, "failed to create user")
+		}
+		return
+	}
+	jsonData(w, http.StatusCreated, map[string]interface{}{
+		"user": map[string]interface{}{
+			"id":           user.ID.String(),
+			"username":     user.Username,
+			"email":        user.Email,
+			"last_name":    user.LastName,
+			"first_name":   user.FirstName,
+			"middle_name":  user.MiddleName,
+			"role":         string(user.Role),
+			"totp_enabled": user.TOTPEnabled,
+			"created_at":   user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		},
+	})
+}
+
+type updateUserRequest struct {
+	Username   *string `json:"username,omitempty"`
+	Email      *string `json:"email,omitempty"`
+	LastName   *string `json:"last_name,omitempty"`
+	FirstName  *string `json:"first_name,omitempty"`
+	MiddleName *string `json:"middle_name,omitempty"`
+	Password   *string `json:"password,omitempty"`
+}
+
+func (h *AdminHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	userIDStr := r.PathValue("id")
+	if userIDStr == "" {
+		jsonError(w, http.StatusBadRequest, "user id required")
+		return
+	}
+	targetUserID, err := parseUUID(userIDStr)
+	if err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid user id")
+		return
+	}
+	actorIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	actorID, _ := parseUUID(actorIDStr)
+	var req updateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Username == nil && req.Email == nil && req.LastName == nil && req.FirstName == nil && req.MiddleName == nil && req.Password == nil {
+		jsonError(w, http.StatusBadRequest, "at least one field to update is required")
+		return
+	}
+	if err := h.adminUsecase.UpdateUser(r.Context(), usecase.UpdateUserInput{
+		TargetUserID: targetUserID,
+		Username:     req.Username,
+		Email:        req.Email,
+		LastName:     req.LastName,
+		FirstName:    req.FirstName,
+		MiddleName:   req.MiddleName,
+		Password:     req.Password,
+		ActorID:      actorID,
+	}); err != nil {
+		switch {
+		case err == usecase.ErrUsernameTaken:
+			jsonError(w, http.StatusConflict, "username already taken")
+		case err == usecase.ErrEmailTaken:
+			jsonError(w, http.StatusConflict, "email already taken")
+		default:
+			jsonError(w, http.StatusInternalServerError, "failed to update user")
+		}
+		return
+	}
+	jsonData(w, http.StatusOK, map[string]string{"message": "user updated"})
+}
+
+func (h *AdminHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	userIDStr := r.PathValue("id")
+	if userIDStr == "" {
+		jsonError(w, http.StatusBadRequest, "user id required")
+		return
+	}
+	targetUserID, err := parseUUID(userIDStr)
+	if err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid user id")
+		return
+	}
+	actorIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	actorID, _ := parseUUID(actorIDStr)
+	if err := h.adminUsecase.DeleteUser(r.Context(), targetUserID, actorID); err != nil {
+		jsonError(w, http.StatusInternalServerError, "failed to delete user")
+		return
+	}
+	jsonData(w, http.StatusOK, map[string]string{"message": "user deleted"})
 }
 
 func (h *AdminHandler) GetLogs(w http.ResponseWriter, r *http.Request) {

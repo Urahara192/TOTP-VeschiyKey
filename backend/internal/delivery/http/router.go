@@ -52,8 +52,11 @@ func (ro *Router) registerRoutes(deps *HandlerDependencies) {
 	adminOnly := m.Role("admin")
 	adminOrDirector := m.Role("admin", "director")
 	ro.mux.Handle("GET /admin/users", m.Auth(adminOrDirector(http.HandlerFunc(deps.AdminHandler.ListUsers))))
-	ro.mux.Handle("PUT /admin/users/", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ChangeRole))))
-	ro.mux.Handle("POST /admin/users/", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.Reset2FA))))
+	ro.mux.Handle("POST /admin/users", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.CreateUser))))
+	ro.mux.Handle("PUT /admin/users/{id}/role", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ChangeRole))))
+	ro.mux.Handle("POST /admin/users/{id}/reset-2fa", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.Reset2FA))))
+	ro.mux.Handle("PUT /admin/users/{id}", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.UpdateUser))))
+	ro.mux.Handle("DELETE /admin/users/{id}", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.DeleteUser))))
 	ro.mux.Handle("GET /admin/logs", m.Auth(adminOrDirector(http.HandlerFunc(deps.AdminHandler.GetLogs))))
 
 	ro.mux.Handle("GET /static/", http.FileServer(http.FS(staticAssets())))

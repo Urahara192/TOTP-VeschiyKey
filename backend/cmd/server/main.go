@@ -47,7 +47,7 @@ func main() {
 
 	authUsecase := usecase.NewAuthUsecase(userRepo, deviceRepo, logRepo, hasher, jwtManager, totpManager, cfg.TrustDeviceTTL)
 	totpUsecase := usecase.NewTOTPUsecase(userRepo, logRepo, totpManager)
-	adminUsecase := usecase.NewAdminUsecase(userRepo, deviceRepo, logRepo, totpManager)
+	adminUsecase := usecase.NewAdminUsecase(userRepo, deviceRepo, logRepo, totpManager, hasher)
 
 	middleware := auth.NewMiddleware(jwtManager)
 
@@ -99,6 +99,9 @@ func runMigrations(pool *pgxpool.Pool) {
 		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 		username VARCHAR(50) UNIQUE NOT NULL,
 		email VARCHAR(255) UNIQUE NOT NULL,
+		last_name VARCHAR(100) NOT NULL DEFAULT '',
+		first_name VARCHAR(100) NOT NULL DEFAULT '',
+		middle_name VARCHAR(100) NOT NULL DEFAULT '',
 		password_hash VARCHAR(255) NOT NULL,
 		role VARCHAR(20) NOT NULL DEFAULT 'employee',
 		totp_secret VARCHAR(255),
@@ -106,6 +109,11 @@ func runMigrations(pool *pgxpool.Pool) {
 		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 		updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 	);
+
+	ALTER TABLE users DROP COLUMN IF EXISTS full_name;
+	ALTER TABLE users ADD COLUMN IF NOT EXISTS last_name VARCHAR(100) NOT NULL DEFAULT '';
+	ALTER TABLE users ADD COLUMN IF NOT EXISTS first_name VARCHAR(100) NOT NULL DEFAULT '';
+	ALTER TABLE users ADD COLUMN IF NOT EXISTS middle_name VARCHAR(100) NOT NULL DEFAULT '';
 
 	CREATE TABLE IF NOT EXISTS trusted_devices (
 		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

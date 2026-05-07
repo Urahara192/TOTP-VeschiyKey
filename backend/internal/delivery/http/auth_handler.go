@@ -66,10 +66,13 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonData(w, http.StatusCreated, map[string]interface{}{
 		"user": map[string]interface{}{
-			"id":       output.User.ID,
-			"username": output.User.Username,
-			"email":    output.User.Email,
-			"role":     output.User.Role,
+			"id":          output.User.ID,
+			"username":    output.User.Username,
+			"email":       output.User.Email,
+			"last_name":   output.User.LastName,
+			"first_name":  output.User.FirstName,
+			"middle_name": output.User.MiddleName,
+			"role":        output.User.Role,
 			"totp_enabled": output.User.TOTPEnabled,
 		},
 	})
@@ -117,10 +120,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		"access_token":  output.AccessToken,
 		"refresh_token": output.RefreshToken,
 		"user": map[string]interface{}{
-			"id":       output.User.ID,
-			"username": output.User.Username,
-			"email":    output.User.Email,
-			"role":     output.User.Role,
+			"id":          output.User.ID,
+			"username":    output.User.Username,
+			"email":       output.User.Email,
+			"last_name":   output.User.LastName,
+			"first_name":  output.User.FirstName,
+			"middle_name": output.User.MiddleName,
+			"role":        output.User.Role,
 			"totp_enabled": output.User.TOTPEnabled,
 		},
 	})

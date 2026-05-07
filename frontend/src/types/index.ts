@@ -2,6 +2,9 @@ export interface User {
   id: string
   username: string
   email: string
+  last_name: string
+  first_name: string
+  middle_name: string
   role: 'admin' | 'accountant' | 'employee' | 'director' | 'analyst'
   totp_enabled: boolean
   created_at: string
@@ -30,6 +33,9 @@ export interface AdminUser {
   id: string
   username: string
   email: string
+  last_name: string
+  first_name: string
+  middle_name: string
   role: string
   totp_enabled: boolean
   created_at: string

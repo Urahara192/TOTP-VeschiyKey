@@ -9,7 +9,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, Search, ShieldAlert, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Search, ShieldAlert, RefreshCw, Plus, Pencil, Trash2 } from 'lucide-react'
 import { getErrorMessage } from '@/lib/utils'
 import type { AdminUser, AuditLog } from '@/types'
 
@@ -24,6 +24,8 @@ export default function Admin() {
   const [search, setSearch] = useState('')
   const [error, setError] = useState('')
   const [tab, setTab] = useState(searchParams.get('tab') || 'users')
+  const [showCreate, setShowCreate] = useState(false)
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null)
 
   const pageSize = 20
 
@@ -70,8 +72,43 @@ export default function Admin() {
     }
   }
 
+  async function handleCreateUser(data: { username: string; email: string; last_name: string; first_name: string; middle_name: string; password: string; role: string }) {
+    try {
+      await api.post('/admin/users', data)
+      setShowCreate(false)
+      loadUsers()
+    } catch (err: any) {
+      const msg = getErrorMessage(err)
+      throw new Error(msg || 'Ошибка создания пользователя')
+    }
+  }
+
+  async function handleUpdateUser(id: string, data: { username?: string; email?: string; last_name?: string; first_name?: string; middle_name?: string; password?: string }) {
+    try {
+      await api.put(`/admin/users/${id}`, data)
+      setEditingUser(null)
+      loadUsers()
+    } catch (err: any) {
+      const msg = getErrorMessage(err)
+      throw new Error(msg || 'Ошибка обновления пользователя')
+    }
+  }
+
+  async function handleDeleteUser(id: string) {
+    if (!confirm('Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.')) return
+    try {
+      await api.delete(`/admin/users/${id}`)
+      loadUsers()
+    } catch {
+      setError('Ошибка удаления пользователя')
+    }
+  }
+
   const filteredUsers = users.filter(
     (u) =>
+      u.last_name.toLowerCase().includes(search.toLowerCase()) ||
+      u.first_name.toLowerCase().includes(search.toLowerCase()) ||
+      u.middle_name.toLowerCase().includes(search.toLowerCase()) ||
       u.username.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase())
   )
@@ -108,16 +145,21 @@ export default function Admin() {
           <TabsContent value="users">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                   <CardTitle>Пользователи ({total})</CardTitle>
-                  <div className="relative w-64">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                    <Input
-                      className="pl-9"
-                      placeholder="Поиск пользователей..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-64">
+                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                      <Input
+                        className="pl-9"
+                        placeholder="Поиск пользователей..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                    </div>
+                    <Button size="sm" onClick={() => setShowCreate(true)}>
+                      <Plus className="mr-1.5 h-4 w-4" /> Создать
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -125,6 +167,9 @@ export default function Admin() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Фамилия</TableHead>
+                      <TableHead>Имя</TableHead>
+                      <TableHead>Отчество</TableHead>
                       <TableHead>Имя пользователя</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Роль</TableHead>
@@ -135,6 +180,9 @@ export default function Admin() {
                   <TableBody>
                     {filteredUsers.map((u) => (
                       <TableRow key={u.id}>
+                        <TableCell className="text-slate-300">{u.last_name || '—'}</TableCell>
+                        <TableCell className="text-slate-300">{u.first_name || '—'}</TableCell>
+                        <TableCell className="text-slate-300">{u.middle_name || '—'}</TableCell>
                         <TableCell className="font-medium">{u.username}</TableCell>
                         <TableCell className="text-slate-400">{u.email}</TableCell>
                         <TableCell>
@@ -157,14 +205,32 @@ export default function Admin() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => reset2FA(u.id)}
-                            disabled={!u.totp_enabled}
-                          >
-                            <RefreshCw className="mr-1 h-3 w-3" /> Сбросить 2FA
-                          </Button>
+                          <div className="flex items-center gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEditingUser(u)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => reset2FA(u.id)}
+                              disabled={!u.totp_enabled}
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-red-800 text-red-400 hover:bg-red-900/30 hover:text-red-300"
+                              onClick={() => handleDeleteUser(u.id)}
+                              disabled={u.id === user?.id}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -228,7 +294,176 @@ export default function Admin() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {showCreate && (
+          <UserFormModal
+            title="Создание пользователя"
+            onClose={() => setShowCreate(false)}
+            onSubmit={handleCreateUser}
+          />
+        )}
+
+        {editingUser && (
+          <UserFormModal
+            title="Редактирование пользователя"
+            user={editingUser}
+            onClose={() => setEditingUser(null)}
+            onSubmit={(data) => handleUpdateUser(editingUser.id, data)}
+          />
+        )}
       </main>
+    </div>
+  )
+}
+
+function UserFormModal({
+  title,
+  user,
+  onClose,
+  onSubmit,
+}: {
+  title: string
+  user?: AdminUser
+  onClose: () => void
+  onSubmit: (data: any) => Promise<void>
+}) {
+  const [lastName, setLastName] = useState(user?.last_name || '')
+  const [firstName, setFirstName] = useState(user?.first_name || '')
+  const [middleName, setMiddleName] = useState(user?.middle_name || '')
+  const [username, setUsername] = useState(user?.username || '')
+  const [email, setEmail] = useState(user?.email || '')
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState(user?.role || 'employee')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!user && (!username || !email || !password)) {
+      setError('Заполните все обязательные поля')
+      return
+    }
+    if (user && !username && !email && !lastName && !firstName && !middleName && !password) {
+      setError('Заполните хотя бы одно поле')
+      return
+    }
+    setSubmitting(true)
+    setError('')
+    try {
+      const payload: any = {}
+      if (lastName) payload.last_name = lastName
+      if (firstName) payload.first_name = firstName
+      if (middleName) payload.middle_name = middleName
+      if (username) payload.username = username
+      if (email) payload.email = email
+      if (password) payload.password = password
+      if (!user) payload.role = role
+      await onSubmit(payload)
+    } catch (err: any) {
+      setError(err.message || 'Ошибка')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <Card className="w-full max-w-md border-slate-700 bg-slate-900 shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-slate-100">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert className="border-red-800 bg-red-900/20">
+                <AlertDescription className="text-red-400">{error}</AlertDescription>
+              </Alert>
+            )}
+            <div>
+              <label className="mb-1 block text-sm text-slate-400">Фамилия</label>
+              <Input
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Иванов"
+                className="border-slate-700 bg-slate-800 text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-400">Имя</label>
+              <Input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Иван"
+                className="border-slate-700 bg-slate-800 text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-400">Отчество</label>
+              <Input
+                value={middleName}
+                onChange={(e) => setMiddleName(e.target.value)}
+                placeholder="Иванович (необязательно)"
+                className="border-slate-700 bg-slate-800 text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-400">Имя пользователя</label>
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username"
+                className="border-slate-700 bg-slate-800 text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-400">Email</label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="user@example.com"
+                className="border-slate-700 bg-slate-800 text-slate-100"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-slate-400">
+                {user ? 'Новый пароль (оставьте пустым, чтобы не менять)' : 'Пароль'}
+              </label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="border-slate-700 bg-slate-800 text-slate-100"
+              />
+            </div>
+            {!user && (
+              <div>
+                <label className="mb-1 block text-sm text-slate-400">Роль</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+                >
+                  <option value="employee">Сотрудник</option>
+                  <option value="accountant">Бухгалтер</option>
+                  <option value="analyst">Аналитик</option>
+                  <option value="director">Руководство</option>
+                  <option value="admin">Администратор</option>
+                </select>
+              </div>
+            )}
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="button" variant="outline" onClick={onClose} className="border-slate-700 text-slate-400">
+                Отмена
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting ? 'Сохранение...' : 'Сохранить'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
