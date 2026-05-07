@@ -5,6 +5,7 @@ import Login from '@/pages/Login'
 import Setup2FA from '@/pages/Setup2FA'
 import Verify2FA from '@/pages/Verify2FA'
 import Dashboard from '@/pages/Dashboard'
+import Profile from '@/pages/Profile'
 import Admin from '@/pages/Admin'
 import ResourcePage from '@/pages/ResourcePage'
 import PWAApp from '@/pwa/PWAApp'
@@ -29,6 +30,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

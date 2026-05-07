@@ -20,7 +20,6 @@ const pages: Record<string, { title: string; icon: any; roles: string[] }> = {
   'invoices': { title: 'Счета', icon: DollarSign, roles: ['admin', 'director', 'accountant'] },
   'server-monitoring': { title: 'Мониторинг серверов', icon: Server, roles: ['admin', 'director'] },
   'database-admin': { title: 'Администрирование БД', icon: Database, roles: ['admin', 'director'] },
-  'hr-portal': { title: 'HR-портал', icon: Users, roles: ['employee', 'director'] },
   'documents': { title: 'Документы', icon: FileText, roles: ['employee', 'director', 'analyst'] },
 }
 
@@ -52,17 +51,6 @@ const reportData = [
   { period: 'Март 2024', revenue: '14 200 000 ₽', expenses: '9 100 000 ₽', profit: '5 100 000 ₽' },
   { period: 'Апрель 2024', revenue: '13 600 000 ₽', expenses: '8 800 000 ₽', profit: '4 800 000 ₽' },
 ]
-
-const hrData = {
-  name: 'Иванов Иван Иванович',
-  position: 'Старший разработчик',
-  department: 'Отдел разработки',
-  email: 'ivanov@company.ru',
-  phone: '+7 (495) 123-45-67',
-  hireDate: '15.03.2021',
-  manager: 'Петров П.П.',
-  vacation: '12 дней',
-}
 
 const docFolders: Record<string, { name: string; icon: any; files: { name: string; type: string; size: string; updated: string }[] }> = {
   'hr-docs': {
@@ -238,31 +226,6 @@ export default function ResourcePage() {
               </Card>
             ))}
           </div>
-        )}
-
-        {name === 'hr-portal' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Личная информация</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {[
-                ['ФИО', hrData.name],
-                ['Должность', hrData.position],
-                ['Отдел', hrData.department],
-                ['Email', hrData.email],
-                ['Телефон', hrData.phone],
-                ['Дата найма', hrData.hireDate],
-                ['Руководитель', hrData.manager],
-                ['Остаток отпуска', hrData.vacation],
-              ].map(([label, value]) => (
-                <div key={label as string} className="flex items-center justify-between border-b border-slate-800 pb-2">
-                  <span className="text-slate-500">{label as string}</span>
-                  <span className="text-slate-100">{value as string}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
         )}
 
         {name === 'documents' && (

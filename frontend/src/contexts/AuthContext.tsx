@@ -1,6 +1,5 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react'
 import api from '@/lib/api'
-import { jwtDecode } from '@/lib/utils'
 import type { User } from '@/types'
 
 interface AuthState {
@@ -35,30 +34,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     if (token) {
-      try {
-        const payload = jwtDecode(token)
-        setUser({
-          id: payload.user_id,
-          username: payload.username,
-          email: '',
-          last_name: '',
-          first_name: '',
-          middle_name: '',
-          role: payload.role,
-          totp_enabled: false,
-          created_at: '',
-        })
-        api.get('/totp/status').then(({ data }) => {
-          setUser((prev) =>
-            prev ? { ...prev, totp_enabled: data.data.totp_enabled } : prev
-          )
-        }).catch(() => {})
-      } catch {
+      api.get('/auth/me').then(({ data }) => {
+        setUser(data.data.user)
+      }).catch(() => {
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
-      }
+      }).finally(() => {
+        setLoading(false)
+      })
+    } else {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
   const register = useCallback(async (username: string, email: string, password: string) => {
@@ -73,7 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     localStorage.setItem('access_token', d.access_token)
     localStorage.setItem('refresh_token', d.refresh_token)
-    setUser(d.user)
+    const profile = await api.get('/auth/me')
+    setUser(profile.data.data.user)
     return { requires_2fa: false }
   }, [])
 
@@ -82,18 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const d = data.data
     localStorage.setItem('access_token', d.access_token)
     localStorage.setItem('refresh_token', d.refresh_token)
-    const payload = jwtDecode(d.access_token)
-    setUser({
-      id: payload.user_id,
-      username: payload.username,
-      email: '',
-      last_name: '',
-      first_name: '',
-      middle_name: '',
-      role: payload.role,
-      totp_enabled: true,
-      created_at: '',
-    })
+    const profile = await api.get('/auth/me')
+    setUser(profile.data.data.user)
   }, [])
 
   const setup2FA = useCallback(async (): Promise<SetupResult> => {

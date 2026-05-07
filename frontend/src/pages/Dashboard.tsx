@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
-import { Shield, LogOut, Settings, Users, FileText, DollarSign, BarChart3, PlusCircle, Receipt, DownloadCloud, Clock, UserCheck, Calendar, Bell, TrendingUp, Activity, CheckCircle, FolderOpen, Search, X, Send, ThumbsUp, Database } from 'lucide-react'
+import { Shield, LogOut, Settings, Users, FileText, DollarSign, BarChart3, PlusCircle, Receipt, DownloadCloud, Clock, UserCheck, Calendar, Bell, TrendingUp, Activity, CheckCircle, FolderOpen, Search, X, Send, ThumbsUp, Database, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { roleLabel } from '@/lib/utils'
 import api from '@/lib/api'
@@ -280,9 +280,6 @@ function EmployeeDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Button variant="outline" className="h-20 border-slate-700 bg-slate-900/50 text-slate-100 hover:bg-blue-900/20 hover:border-blue-700 hover:text-blue-400" onClick={() => navigate('/resource/hr-portal')}>
-          <Users className="mr-3 h-5 w-5" /> <span className="text-left"><span className="block font-medium">Личная информация</span><span className="block text-xs text-slate-500 font-normal">Просмотр и редактирование профиля</span></span>
-        </Button>
         <Button variant="outline" className="h-20 border-slate-700 bg-slate-900/50 text-slate-100 hover:bg-purple-900/20 hover:border-purple-700 hover:text-purple-400" onClick={() => navigate('/resource/documents')}>
           <FolderOpen className="mr-3 h-5 w-5" /> <span className="text-left"><span className="block font-medium">Корпоративные документы</span><span className="block text-xs text-slate-500 font-normal">Нормативные документы и инструкции</span></span>
         </Button>
@@ -591,10 +588,18 @@ export default function Dashboard() {
             <span className="text-lg font-semibold text-slate-100">Корпоративный портал</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-sm font-medium text-slate-100">{user?.username}</p>
+            <div className="text-center">
+              <p className="text-sm font-medium text-slate-100">{user?.first_name || user?.username}</p>
               <Badge variant="secondary" className="text-xs">{roleLabel(user?.role || '')}</Badge>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/profile')}
+              className="border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+            >
+              <User className="mr-1.5 h-3.5 w-3.5" /> Профиль
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -611,10 +616,26 @@ export default function Dashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-slate-100">Добро пожаловать, {user?.username}!</h2>
+              <h2 className="text-2xl font-bold text-slate-100">Добро пожаловать, {user?.first_name || user?.username}!</h2>
               <p className="mt-1 text-sm text-slate-500">{roleGreetings[user?.role || '']}</p>
             </div>
           </div>
+
+          {user && !user.totp_enabled && (
+            <Card className="mt-4 animate-pulse border-yellow-800 bg-gradient-to-r from-yellow-900/20 to-yellow-900/10">
+              <CardContent className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-900/40">
+                    <Shield className="h-4 w-4 text-yellow-400" />
+                  </div>
+                  <p className="text-sm font-medium text-yellow-400">Двухфакторная аутентификация не включена</p>
+                </div>
+                <Button onClick={() => navigate('/setup-2fa')} size="sm" className="bg-yellow-600 text-white hover:bg-yellow-500">
+                  Включить 2FA
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {user?.role === 'admin' && <AdminDashboard />}
@@ -622,22 +643,6 @@ export default function Dashboard() {
         {user?.role === 'employee' && <EmployeeDashboard />}
         {user?.role === 'director' && <DirectorDashboard />}
         {user?.role === 'analyst' && <AnalystDashboard />}
-
-        {user && !user.totp_enabled && (
-          <Card className="mt-8 animate-pulse border-yellow-800 bg-gradient-to-r from-yellow-900/20 to-yellow-900/10">
-            <CardContent className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-900/40">
-                  <Shield className="h-4 w-4 text-yellow-400" />
-                </div>
-                <p className="text-sm font-medium text-yellow-400">Двухфакторная аутентификация не включена</p>
-              </div>
-              <Button onClick={() => navigate('/setup-2fa')} size="sm" className="bg-yellow-600 text-white hover:bg-yellow-500">
-                Включить 2FA
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </main>
     </div>
   )
