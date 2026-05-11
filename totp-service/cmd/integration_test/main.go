@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	totplib "github.com/anomalyco/totp-lib"
+	totplib "github.com/Urahara192/totp-lib"
 )
 
 const baseURL = "http://localhost:9090"

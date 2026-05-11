@@ -191,11 +191,11 @@ curl -o qr.png "http://localhost:9090/qr?secret=JBSWY3DPEHPK3PXP&issuer=MyApp&ac
 Отдельный модуль, доступный через `go get`:
 
 ```bash
-go get github.com/anomalyco/totp-lib
+go get github.com/Urahara192/totp-lib
 ```
 
 ```go
-import totp "github.com/anomalyco/totp-lib"
+import totp "github.com/Urahara192/totp-lib"
 
 secret, uri, _ := totp.GenerateSecret("MyApp", "user@example.com")
 qr, _ := totp.GenerateQRBase64(uri)

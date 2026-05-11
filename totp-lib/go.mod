@@ -1,4 +1,4 @@
-module github.com/anomalyco/totp-lib
+module github.com/Urahara192/totp-lib
 
 go 1.22
 

@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	totplib "github.com/anomalyco/totp-lib"
+	totplib "github.com/Urahara192/totp-lib"
 	"github.com/google/uuid"
 )
 
