@@ -1,10 +1,14 @@
-import { useTOTP } from '@/hooks/useTOTP'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Trash2, Smartphone } from 'lucide-react'
 
-export default function AccountList() {
-  const { accounts, codes, removeAccount } = useTOTP()
+interface Props {
+  accounts: Array<{ id: string; label: string; secret: string; issuer: string }>
+  codes: Record<string, string>
+  onRemove: (id: string) => void
+}
+
+export default function AccountList({ accounts, codes, onRemove }: Props) {
 
   if (accounts.length === 0) {
     return (
@@ -30,7 +34,7 @@ export default function AccountList() {
                 {codes[acc.id] || '------'}
               </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => removeAccount(acc.id)}>
+            <Button variant="ghost" size="icon" onClick={() => onRemove(acc.id)}>
               <Trash2 className="h-4 w-4 text-slate-500" />
             </Button>
           </CardContent>

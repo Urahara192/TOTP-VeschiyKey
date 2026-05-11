@@ -6,7 +6,7 @@ import AccountList from '@/pwa/AccountList'
 import AddAccount from '@/pwa/AddAccount'
 
 export default function PWAApp() {
-  const { accounts, addAccount } = useTOTP()
+  const { accounts, codes, addAccount, removeAccount } = useTOTP()
   const [timeLeft, setTimeLeft] = useState(30)
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function PWAApp() {
         </TabsList>
 
         <TabsContent value="codes">
-          <AccountList />
+          <AccountList accounts={accounts} codes={codes} onRemove={removeAccount} />
           {accounts.length > 0 && (
             <div className="mt-4">
               <div className="h-2 w-full rounded-full bg-slate-800">
