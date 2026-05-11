@@ -1,4 +1,9 @@
 AGENTS.md
+TOTP-SERVICE.md
+
+# PocketBase
+pocketbase/pb_data/
+pocketbase/pocketbase.exe
 
 # Node
 node_modules/
