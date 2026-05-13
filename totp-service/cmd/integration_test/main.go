@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	totplib "github.com/Urahara192/totp-lib"
+	"totp-auth-system/totp-service/internal/totplib"
 )
 
 const baseURL = "http://localhost:9090"

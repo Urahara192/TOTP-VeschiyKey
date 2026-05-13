@@ -22,6 +22,15 @@ docker run -d -p 9090:9090 \
 docker compose up -d totp-service
 ```
 
+## Сборка из исходников
+
+```bash
+git clone <url-репозитория>
+cd totp-service
+go build -o totp-service ./cmd/server
+./totp-service
+```
+
 ## API
 
 ### `POST /setup` — создать секрет и QR-код
@@ -186,19 +195,4 @@ curl -X POST http://localhost:9090/verify \
 curl -o qr.png "http://localhost:9090/qr?secret=JBSWY3DPEHPK3PXP&issuer=MyApp&account=alice"
 ```
 
-## Go-пакет totp-lib
 
-Отдельный модуль, доступный через `go get`:
-
-```bash
-go get github.com/Urahara192/totp-lib
-```
-
-```go
-import totp "github.com/Urahara192/totp-lib"
-
-secret, uri, _ := totp.GenerateSecret("MyApp", "user@example.com")
-qr, _ := totp.GenerateQRBase64(uri)
-valid := totp.ValidateCode(secret, "123456", 1)
-code, _ := totp.GenerateCode(secret)
-```

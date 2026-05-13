@@ -1,8 +1,6 @@
 FROM golang:1.22-alpine AS build
 WORKDIR /app
-COPY totp-lib/ ./totp-lib/
-COPY totp-service/ ./totp-service/
-WORKDIR /app/totp-service
+COPY . .
 RUN go build -o /totp-service ./cmd/server
 
 FROM alpine:3.19
