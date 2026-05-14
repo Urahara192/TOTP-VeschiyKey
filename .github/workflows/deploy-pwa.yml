@@ -40,7 +40,7 @@ jobs:
         run: GH_PAGES=true npm run build
 
       - name: Rename entry for GitHub Pages
-        run: mv ./frontend/dist/pwa-index.html ./frontend/dist/index.html
+        run: mv dist/pwa-index.html dist/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
