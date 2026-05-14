@@ -58,7 +58,7 @@ export function useBiometric() {
           user: {
             id: userId,
             name: 'totp-user',
-            displayName: 'Владелец TOTP',
+            displayName: 'Владѣтель TOTP',
           },
           pubKeyCredParams: [
             { alg: -7, type: 'public-key' },
@@ -75,7 +75,7 @@ export function useBiometric() {
 
       const pubKeyCred = credential as PublicKeyCredential | null
       if (!pubKeyCred) {
-        setError('Регистрация отменена')
+        setError('Запись отменена')
         return false
       }
 
@@ -85,7 +85,7 @@ export function useBiometric() {
       setAuthenticated(true)
       return true
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Ошибка биометрии'
+      const msg = err instanceof Error ? err.message : 'Погрѣшность биометрии'
       if (/cancel|abort/i.test(msg)) {
         setError('Отменено')
       } else {
@@ -122,16 +122,16 @@ export function useBiometric() {
       })) as PublicKeyCredential | null
 
       if (!assertion) {
-        setError('Аутентификация отменена')
+        setError('Утверждение отменено')
         return false
       }
 
       setAuthenticated(true)
       return true
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Ошибка аутентификации'
+      const msg = err instanceof Error ? err.message : 'Погрѣшность утверждения'
       if (/cancel|abort|timeout/i.test(msg)) {
-        setError(msg.includes('timeout') ? 'Время ожидания истекло' : 'Отменено')
+        setError(msg.includes('timeout') ? 'Время минуло' : 'Отменено')
       } else {
         setError(msg)
       }

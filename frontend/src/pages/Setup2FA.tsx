@@ -29,7 +29,7 @@ export default function Setup2FA() {
         setStep('qr')
       })
       .catch(() => {
-        setError('Ошибка настройки 2FA')
+        setError('Погрѣшность устроения 2FA')
         setStep('qr')
       })
   }, [setup2FA])
@@ -42,7 +42,7 @@ export default function Setup2FA() {
       await enable2FA(code)
       setStep('done')
     } catch (err: any) {
-      setError(getErrorMessage(err) || 'Неверный код')
+      setError(getErrorMessage(err) || 'Неправый ключь')
     } finally {
       setLoading(false)
     }
@@ -51,7 +51,7 @@ export default function Setup2FA() {
   if (step === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-950 to-slate-900">
-        <div className="text-slate-400">Настройка 2FA...</div>
+        <div className="text-slate-400">Устроение 2FA...</div>
       </div>
     )
   }
@@ -64,12 +64,12 @@ export default function Setup2FA() {
             {step === 'done' ? <KeyRound className="h-6 w-6 text-green-400" /> : <QrCode className="h-6 w-6 text-slate-100" />}
           </div>
           <CardTitle>
-            {step === 'done' ? '2FA Включена' : 'Настройка двухфакторной аутентификации'}
+            {step === 'done' ? '2FA Включена' : 'Устроение двувратного утверждения'}
           </CardTitle>
           <CardDescription>
             {step === 'done'
-              ? 'Ваш аккаунт теперь защищён с помощью 2FA'
-              : 'Отсканируйте QR-код приложением-аутентификатором'}
+              ? 'Твой акаунтъ отнынѣ защищенъ 2FA'
+              : 'Прочти QR-кодъ приложениемъ'}
           </CardDescription>
         </CardHeader>
 
@@ -85,10 +85,10 @@ export default function Setup2FA() {
             </div>
             <details className="text-center">
               <summary className="cursor-pointer text-sm text-slate-400 hover:text-slate-300">
-                Не можете отсканировать код?
+                Не можите прочести кодъ?
               </summary>
               <div className="mt-2 space-y-2">
-                <p className="text-xs text-slate-500">Ключ для ручной настройки:</p>
+                <p className="text-xs text-slate-500">Ключь для ручного устроения:</p>
                 <code className="block break-all rounded bg-slate-800 px-3 py-2 text-xs text-slate-300">{secret}</code>
               </div>
             </details>
@@ -98,7 +98,7 @@ export default function Setup2FA() {
         {step === 'qr' && (
           <CardFooter>
             <Button className="w-full" onClick={() => setStep('verify')}>
-              Я отсканировал код
+              Азъ прочелъ кодъ
             </Button>
           </CardFooter>
         )}
@@ -112,13 +112,13 @@ export default function Setup2FA() {
                 </Alert>
               )}
               <div className="space-y-2">
-                <Label htmlFor="code">Введите 6-значный код из приложения</Label>
+                <Label htmlFor="code">Впиши 6-значный ключь изъ приложения</Label>
                 <Input id="code" placeholder="000000" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} required />
               </div>
             </CardContent>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={loading || code.length !== 6}>
-                {loading ? 'Проверка...' : 'Подтвердить и включить'}
+                {loading ? 'Проверение...' : 'Подтвердити и включити'}
               </Button>
             </CardFooter>
           </form>
@@ -127,7 +127,7 @@ export default function Setup2FA() {
         {step === 'done' && (
           <CardFooter>
             <Button className="w-full" onClick={() => navigate('/dashboard')}>
-              Перейти в панель управления
+              Перейти въ палату управления
             </Button>
           </CardFooter>
         )}
