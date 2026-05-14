@@ -31,7 +31,7 @@ export default function Verify2FA() {
       await verify2FA(username, code, trustDevice)
       navigate('/dashboard')
     } catch (err: any) {
-      setError(getErrorMessage(err) || 'Неверный код')
+      setError(getErrorMessage(err) || 'Неправый ключь')
     } finally {
       setLoading(false)
     }
@@ -44,8 +44,8 @@ export default function Verify2FA() {
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-800">
             <Smartphone className="h-6 w-6 text-slate-100" />
           </div>
-          <CardTitle>Двухфакторная аутентификация</CardTitle>
-          <CardDescription>Введите код из приложения-аутентификатора</CardDescription>
+          <CardTitle>Двухвратное утверждение</CardTitle>
+          <CardDescription>Впиши ключь изъ приложения</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -55,17 +55,17 @@ export default function Verify2FA() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="code">Код аутентификации</Label>
+              <Label htmlFor="code">Ключь утверждения</Label>
               <Input id="code" placeholder="000000" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} required />
             </div>
             <div className="flex items-center gap-2">
               <input type="checkbox" id="trust" checked={trustDevice} onChange={(e) => setTrustDevice(e.target.checked)} className="rounded border-slate-700 bg-slate-900" />
-              <Label htmlFor="trust" className="text-xs text-slate-400">Доверять этому устройству 30 дней</Label>
+              <Label htmlFor="trust" className="text-xs text-slate-400">Вѣрити сему устройству 30 дний</Label>
             </div>
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={loading || code.length !== 6}>
-              {loading ? 'Проверка...' : 'Подтвердить'}
+              {loading ? 'Проверение...' : 'Подтвердити'}
             </Button>
           </CardFooter>
         </form>
