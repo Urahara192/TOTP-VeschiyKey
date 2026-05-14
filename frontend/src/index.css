@@ -3,10 +3,121 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 15 44% 7%;
+    --foreground: 34 60% 89%;
+    --card: 15 44% 7%;
+    --card-foreground: 34 60% 89%;
+    --popover: 15 44% 7%;
+    --popover-foreground: 34 60% 89%;
+    --primary: 354 75% 24%;
+    --primary-foreground: 34 60% 89%;
+    --secondary: 25 23% 20%;
+    --secondary-foreground: 34 60% 89%;
+    --muted: 25 23% 20%;
+    --muted-foreground: 34 22% 55%;
+    --accent: 44 54% 54%;
+    --accent-foreground: 15 44% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 34 60% 89%;
+    --border: 44 54% 54% / 0.25;
+    --input: 25 23% 20%;
+    --ring: 44 54% 54%;
+    --radius: 0.5rem;
+  }
+
   * {
     @apply border-slate-800;
   }
+
   body {
     @apply bg-slate-950 text-slate-100 antialiased;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(107, 15, 26, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201, 168, 76, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+  }
+
+  h1::first-letter,
+  h2::first-letter {
+    color: #C9A84C;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1A0F0A;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #5E4E3C;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C9A84C;
+  }
+
+  ::selection {
+    background: #6B0F1A;
+    color: #F5E6D3;
+  }
+}
+
+@layer components {
+  .ornament-divider {
+    @apply relative my-6 flex items-center justify-center;
+  }
+  .ornament-divider::before {
+    content: '';
+    @apply absolute left-0 right-0 h-px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #C9A84C 20%,
+      #C9A84C 80%,
+      transparent 100%
+    );
+  }
+  .ornament-divider::after {
+    content: '✦';
+    @apply relative z-10 bg-slate-950 px-3 text-sm text-[#C9A84C];
+  }
+
+  .slavic-card {
+    @apply relative overflow-hidden rounded-lg border border-[#C9A84C]/20 bg-slate-950/80 p-4 shadow-lg shadow-black/20;
+  }
+  .slavic-card::before {
+    content: '';
+    @apply pointer-events-none absolute left-0 top-0 h-full w-full;
+    background:
+      linear-gradient(135deg, rgba(201, 168, 76, 0.08) 0%, transparent 50%),
+      linear-gradient(225deg, rgba(107, 15, 26, 0.05) 0%, transparent 50%);
+  }
+  .slavic-card::after {
+    content: '';
+    @apply pointer-events-none absolute right-2 top-2 h-4 w-4;
+    border-top: 1px solid rgba(201, 168, 76, 0.3);
+    border-right: 1px solid rgba(201, 168, 76, 0.3);
+  }
+  .slavic-card > :first-child::before {
+    content: '';
+    @apply pointer-events-none absolute bottom-2 left-2 h-4 w-4;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+    border-left: 1px solid rgba(201, 168, 76, 0.3);
+  }
+
+  .slavic-btn {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md border border-[#C9A84C]/30 bg-[#6B0F1A] px-4 py-2 font-cormorant text-base font-semibold text-[#F5E6D3] transition-all duration-300 hover:border-[#C9A84C]/60 hover:bg-[#8B0000] hover:shadow-lg hover:shadow-[#C9A84C]/10 active:scale-95;
+  }
+  .slavic-btn-outline {
+    @apply border border-[#C9A84C]/30 bg-transparent text-[#D4C4B0] hover:border-[#C9A84C]/60 hover:bg-[#C9A84C]/10 hover:text-[#F5E6D3];
+  }
+  .slavic-btn-ghost {
+    @apply border-none bg-transparent text-[#B8A58E] hover:bg-[#C9A84C]/10 hover:text-[#D4C4B0];
   }
 }
