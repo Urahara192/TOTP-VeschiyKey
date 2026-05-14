@@ -38,66 +38,66 @@ const dbData = [
 ]
 
 const invoiceData = [
-  { id: 'INV-2024-001', client: 'ООО «ТехноСервис»', amount: '450 000 ₽', date: '05.05.2024', status: 'paid' as const },
-  { id: 'INV-2024-002', client: 'АО «СтройИнвест»', amount: '1 200 000 ₽', date: '28.04.2024', status: 'paid' as const },
-  { id: 'INV-2024-003', client: 'ИП Петров А.С.', amount: '75 000 ₽', date: '15.04.2024', status: 'pending' as const },
-  { id: 'INV-2024-004', client: 'ООО «МедиаГрупп»', amount: '320 000 ₽', date: '10.04.2024', status: 'pending' as const },
-  { id: 'INV-2024-005', client: 'АО «ЛогистикПро»', amount: '890 000 ₽', date: '01.04.2024', status: 'overdue' as const },
+  { id: 'INV-2026-001', client: 'ООО «ТехноСервис»', amount: '450 000 ₽', date: '05.05.2026', status: 'paid' as const },
+  { id: 'INV-2026-002', client: 'АО «СтройИнвест»', amount: '1 200 000 ₽', date: '28.04.2026', status: 'paid' as const },
+  { id: 'INV-2026-003', client: 'ИП Петров А.С.', amount: '75 000 ₽', date: '15.04.2026', status: 'pending' as const },
+  { id: 'INV-2026-004', client: 'ООО «МедиаГрупп»', amount: '320 000 ₽', date: '10.04.2026', status: 'pending' as const },
+  { id: 'INV-2026-005', client: 'АО «ЛогистикПро»', amount: '890 000 ₽', date: '01.04.2026', status: 'overdue' as const },
 ]
 
 const reportData = [
-  { period: 'Январь 2024', revenue: '12 450 000 ₽', expenses: '8 320 000 ₽', profit: '4 130 000 ₽' },
-  { period: 'Февраль 2024', revenue: '11 800 000 ₽', expenses: '7 950 000 ₽', profit: '3 850 000 ₽' },
-  { period: 'Март 2024', revenue: '14 200 000 ₽', expenses: '9 100 000 ₽', profit: '5 100 000 ₽' },
-  { period: 'Апрель 2024', revenue: '13 600 000 ₽', expenses: '8 800 000 ₽', profit: '4 800 000 ₽' },
+  { period: 'Январь 2026', revenue: '12 450 000 ₽', expenses: '8 320 000 ₽', profit: '4 130 000 ₽' },
+  { period: 'Февраль 2026', revenue: '11 800 000 ₽', expenses: '7 950 000 ₽', profit: '3 850 000 ₽' },
+  { period: 'Март 2026', revenue: '14 200 000 ₽', expenses: '9 100 000 ₽', profit: '5 100 000 ₽' },
+  { period: 'Апрель 2026', revenue: '13 600 000 ₽', expenses: '8 800 000 ₽', profit: '4 800 000 ₽' },
 ]
 
 const docFolders: Record<string, { name: string; icon: any; files: { name: string; type: string; size: string; updated: string }[] }> = {
   'hr-docs': {
     name: 'Кадровые документы', icon: Users,
     files: [
-      { name: 'Трудовой договор (шаблон)', type: 'DOCX', size: '45 KB', updated: '10.01.2024' },
-      { name: 'Заявление на отпуск (форма)', type: 'DOCX', size: '32 KB', updated: '15.02.2024' },
-      { name: 'График отпусков 2024', type: 'XLSX', size: '120 KB', updated: '20.12.2023' },
-      { name: 'Штатное расписание', type: 'XLSX', size: '89 KB', updated: '01.03.2024' },
-      { name: 'Положение о премировании', type: 'PDF', size: '245 KB', updated: '05.01.2024' },
+      { name: 'Трудовой договор (шаблон)', type: 'DOCX', size: '45 KB', updated: '10.01.2026' },
+      { name: 'Заявление на отпуск (форма)', type: 'DOCX', size: '32 KB', updated: '15.02.2026' },
+      { name: 'График отпусков 2026', type: 'XLSX', size: '120 KB', updated: '20.12.2025' },
+      { name: 'Штатное расписание', type: 'XLSX', size: '89 KB', updated: '01.03.2026' },
+      { name: 'Положение о премировании', type: 'PDF', size: '245 KB', updated: '05.01.2026' },
     ],
   },
   security: {
     name: 'Безопасность', icon: Shield,
     files: [
-      { name: 'Политика информационной безопасности', type: 'PDF', size: '890 KB', updated: '15.03.2024' },
-      { name: 'Инструкция по работе с VPN', type: 'PDF', size: '156 KB', updated: '20.02.2024' },
-      { name: 'Памятка по парольной политике', type: 'PDF', size: '78 KB', updated: '10.01.2024' },
-      { name: 'Договор о неразглашении (NDA)', type: 'PDF', size: '245 KB', updated: '12.04.2024' },
-      { name: 'Акт об утечке данных (протокол)', type: 'PDF', size: '1.1 MB', updated: '28.02.2024' },
+      { name: 'Политика информационной безопасности', type: 'PDF', size: '890 KB', updated: '15.03.2026' },
+      { name: 'Инструкция по работе с VPN', type: 'PDF', size: '156 KB', updated: '20.02.2026' },
+      { name: 'Памятка по парольной политике', type: 'PDF', size: '78 KB', updated: '10.01.2026' },
+      { name: 'Договор о неразглашении (NDA)', type: 'PDF', size: '245 KB', updated: '12.04.2026' },
+      { name: 'Акт об утечке данных (протокол)', type: 'PDF', size: '1.1 MB', updated: '28.02.2026' },
     ],
   },
   regulations: {
     name: 'Нормативные документы', icon: FileText,
     files: [
-      { name: 'Правила внутреннего распорядка', type: 'PDF', size: '1.2 MB', updated: '01.01.2024' },
-      { name: 'Коллективный договор', type: 'PDF', size: '2.4 MB', updated: '15.01.2024' },
-      { name: 'Устав компании', type: 'PDF', size: '680 KB', updated: '01.01.2024' },
-      { name: 'Кодекс корпоративной этики', type: 'PDF', size: '450 KB', updated: '10.03.2024' },
+      { name: 'Правила внутреннего распорядка', type: 'PDF', size: '1.2 MB', updated: '01.01.2026' },
+      { name: 'Коллективный договор', type: 'PDF', size: '2.4 MB', updated: '15.01.2026' },
+      { name: 'Устав компании', type: 'PDF', size: '680 KB', updated: '01.01.2026' },
+      { name: 'Кодекс корпоративной этики', type: 'PDF', size: '450 KB', updated: '10.03.2026' },
     ],
   },
   finance: {
     name: 'Финансовая документация', icon: DollarSign,
     files: [
-      { name: 'Бюджет на 2024 год', type: 'XLSX', size: '2.8 MB', updated: '15.01.2024' },
-      { name: 'Отчёт за 1 квартал 2024', type: 'PDF', size: '1.5 MB', updated: '10.04.2024' },
-      { name: 'Налоговый календарь', type: 'PDF', size: '340 KB', updated: '01.01.2024' },
+      { name: 'Бюджет на 2026 год', type: 'XLSX', size: '2.8 MB', updated: '15.01.2026' },
+      { name: 'Отчёт за 1 квартал 2026', type: 'PDF', size: '1.5 MB', updated: '10.04.2026' },
+      { name: 'Налоговый календарь', type: 'PDF', size: '340 KB', updated: '01.01.2026' },
     ],
   },
   instructions: {
     name: 'Инструкции и регламенты', icon: ScrollText,
     files: [
-      { name: 'Инструкция пользователя CRM', type: 'PDF', size: '3.2 MB', updated: '20.03.2024' },
-      { name: 'Регламент работы с почтой', type: 'PDF', size: '210 KB', updated: '05.02.2024' },
-      { name: 'Инструкция по удалённой работе', type: 'PDF', size: '180 KB', updated: '01.03.2024' },
-      { name: 'Порядок согласования договоров', type: 'PDF', size: '320 KB', updated: '12.01.2024' },
-      { name: 'Инструкция по использованию VPS', type: 'PDF', size: '560 KB', updated: '25.03.2024' },
+      { name: 'Инструкция пользователя CRM', type: 'PDF', size: '3.2 MB', updated: '20.03.2026' },
+      { name: 'Регламент работы с почтой', type: 'PDF', size: '210 KB', updated: '05.02.2026' },
+      { name: 'Инструкция по удалённой работе', type: 'PDF', size: '180 KB', updated: '01.03.2026' },
+      { name: 'Порядок согласования договоров', type: 'PDF', size: '320 KB', updated: '12.01.2026' },
+      { name: 'Инструкция по использованию VPS', type: 'PDF', size: '560 KB', updated: '25.03.2026' },
     ],
   },
 }
