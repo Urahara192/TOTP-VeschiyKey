@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTOTP } from '@/hooks/useTOTP'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Smartphone } from 'lucide-react'
@@ -7,15 +7,25 @@ import AddAccount from '@/pwa/AddAccount'
 import BiometricGate from '@/pwa/BiometricGate'
 
 export default function PWAApp() {
-  const { accounts, codes, addAccount, removeAccount } = useTOTP()
+  const { accounts, codes, addAccount, removeAccount, refreshCodes } = useTOTP()
+  const [tab, setTab] = useState('codes')
   const [timeLeft, setTimeLeft] = useState(30)
+  const prev = useRef(Math.floor(Date.now() / 1000) % 30)
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft(30 - (Math.floor(Date.now() / 1000) % 30))
-    }, 1000)
+      const now = Math.floor(Date.now() / 1000)
+      const pos = now % 30
+      setTimeLeft(30 - pos)
+      if (pos < prev.current) {
+        refreshCodes()
+      }
+      prev.current = pos
+    }, 200)
     return () => clearInterval(interval)
-  }, [])
+  }, [refreshCodes])
+
+  const handleAdded = useCallback(() => setTab('codes'), [])
 
   return (
     <BiometricGate>
@@ -27,7 +37,7 @@ export default function PWAApp() {
           </div>
         </header>
 
-        <Tabs defaultValue="codes">
+        <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full">
           <TabsTrigger value="codes" className="flex-1">Ключи</TabsTrigger>
           <TabsTrigger value="add" className="flex-1">Приложити акаунтъ</TabsTrigger>
@@ -39,7 +49,7 @@ export default function PWAApp() {
               <div className="mt-4">
                 <div className="h-2 w-full rounded-full bg-slate-800">
                   <div
-                    className="h-full rounded-full bg-slate-100 transition-all duration-1000"
+                    className="h-full rounded-full bg-slate-100 transition-all duration-300"
                     style={{ width: `${(timeLeft / 30) * 100}%` }}
                   />
                 </div>
@@ -49,7 +59,7 @@ export default function PWAApp() {
           </TabsContent>
 
           <TabsContent value="add">
-            <AddAccount onAdd={addAccount} />
+            <AddAccount onAdd={addAccount} onAdded={handleAdded} />
           </TabsContent>
         </Tabs>
       </div>

@@ -42,22 +42,22 @@ function generateCodesFor(accounts: TOTPAccount[]): Record<string, string> {
 export function useTOTP() {
   const [accounts, setAccounts] = useState<TOTPAccount[]>(loadAccounts)
   const [codes, setCodes] = useState<Record<string, string>>({})
-  const [tick, setTick] = useState(0)
 
   useEffect(() => {
     saveAccounts(accounts)
+    setCodes(generateCodesFor(accounts))
   }, [accounts])
 
-  useEffect(() => {
-    const gen = () => setCodes(generateCodesFor(accounts))
-    gen()
-    const ms = 30000 - (Date.now() % 30000)
-    const timeout = setTimeout(() => {
-      gen()
-      setTick((n) => n + 1)
-    }, ms)
-    return () => clearTimeout(timeout)
-  }, [accounts, tick])
+  const refreshCodes = useCallback(() => {
+    setCodes((prev) => {
+      const next = generateCodesFor(accounts)
+      let changed = false
+      for (const id of Object.keys(next)) {
+        if (prev[id] !== next[id]) { changed = true; break }
+      }
+      return changed || Object.keys(prev).length !== Object.keys(next).length ? next : prev
+    })
+  }, [accounts])
 
   const addAccount = useCallback((acc: TOTPAccount) => {
     setAccounts((prev) => {
@@ -70,5 +70,5 @@ export function useTOTP() {
     setAccounts((prev) => prev.filter((a) => a.id !== id))
   }, [])
 
-  return { accounts, codes, addAccount, removeAccount }
+  return { accounts, codes, addAccount, removeAccount, refreshCodes }
 }

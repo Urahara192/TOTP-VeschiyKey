@@ -8,9 +8,10 @@ import { Scan, Key } from 'lucide-react'
 
 interface Props {
   onAdd: (account: { id: string; label: string; secret: string; issuer: string }) => void
+  onAdded: () => void
 }
 
-export default function AddAccount({ onAdd }: Props) {
+export default function AddAccount({ onAdd, onAdded }: Props) {
   const [method, setMethod] = useState<'scan' | 'manual'>('scan')
   const [label, setLabel] = useState('')
   const [secret, setSecret] = useState('')
@@ -66,6 +67,7 @@ export default function AddAccount({ onAdd }: Props) {
         secret: secretVal,
         issuer: issuerVal,
       })
+      onAdded()
     } catch {
       setError('Неправильный QR-кодъ')
     }
@@ -85,6 +87,7 @@ export default function AddAccount({ onAdd }: Props) {
     setLabel('')
     setSecret('')
     setError('')
+    onAdded()
   }
 
   return (
