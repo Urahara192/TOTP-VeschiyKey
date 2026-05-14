@@ -72,8 +72,8 @@ function SwipeableCard({ children, onRemove }: { children: React.ReactNode; onRe
   }
 
   return (
-    <div className="relative overflow-hidden rounded-lg">
-      <div className="absolute inset-y-0 right-0 flex w-20 items-center justify-center rounded-lg bg-red-800">
+    <div className="relative overflow-hidden rounded-lg bg-slate-950">
+      <div className="absolute inset-y-0 right-0 flex w-20 items-center justify-center bg-red-800">
         <button
           type="button"
           onClick={onRemove}
@@ -83,7 +83,7 @@ function SwipeableCard({ children, onRemove }: { children: React.ReactNode; onRe
         </button>
       </div>
       <div
-        className="relative rounded-lg transition-transform duration-200 ease-out"
+        className="relative rounded-lg bg-slate-950 transition-transform duration-200 ease-out"
         style={{ transform: open ? 'translateX(-80px)' : 'translateX(0)' }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
