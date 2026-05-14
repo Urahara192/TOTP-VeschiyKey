@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "GH_PAGES=true npm run build && node -e \"require('fs').renameSync('dist/pwa-index.html','dist/index.html')\" && npx gh-pages -d dist -e ."
   },
   "dependencies": {
     "react": "^18.3.1",
