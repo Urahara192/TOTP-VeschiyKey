@@ -59,10 +59,11 @@ function SwipeableCard({ children, onRemove }: { children: React.ReactNode; onRe
 
   function handleTouchMove(e: React.TouchEvent) {
     const dx = e.touches[0].clientX - startRef.current
-    if (!open && dx < -20) swipingRef.current = true
-    if (swipingRef.current) {
-      if (dx < -80) setOpen(true)
-      else if (dx > 20) { setOpen(false); swipingRef.current = false }
+    if (open) {
+      if (dx > 20) { setOpen(false); swipingRef.current = false }
+    } else {
+      if (dx < -20) swipingRef.current = true
+      if (swipingRef.current && dx < -80) setOpen(true)
     }
   }
 
