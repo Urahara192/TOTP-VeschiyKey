@@ -3,10 +3,24 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"net"
 	"net/http"
+	"strings"
 
 	"totp-auth-system/backend/internal/application/usecase"
+	"totp-auth-system/backend/internal/infrastructure/auth"
 )
+
+func getClientIP(r *http.Request) string {
+	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+		return strings.Split(fwd, ",")[0]
+	}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return host
+}
 
 type AuthHandler struct {
 	authUsecase *usecase.AuthUsecase
@@ -32,16 +46,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "username, email, and password are required")
 		return
 	}
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = fwd
-	}
 	ctx := r.Context()
 	output, err := h.authUsecase.Register(ctx, usecase.RegisterInput{
 		Username:  req.Username,
 		Email:     req.Email,
 		Password:  req.Password,
-		IP:        ip,
+		IP:        getClientIP(r),
 		UserAgent: r.Header.Get("User-Agent"),
 	})
 	if err != nil {
@@ -57,10 +67,14 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonData(w, http.StatusCreated, map[string]interface{}{
 		"user": map[string]interface{}{
-			"id":       output.User.ID,
-			"username": output.User.Username,
-			"email":    output.User.Email,
-			"role":     output.User.Role,
+			"id":          output.User.ID,
+			"username":    output.User.Username,
+			"email":       output.User.Email,
+			"last_name":   output.User.LastName,
+			"first_name":  output.User.FirstName,
+			"middle_name": output.User.MiddleName,
+			"role":        output.User.Role,
+			"totp_enabled": output.User.TOTPEnabled,
 		},
 	})
 }
@@ -80,14 +94,10 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "username and password are required")
 		return
 	}
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = fwd
-	}
 	output, err := h.authUsecase.Login(r.Context(), usecase.LoginInput{
 		Username:  req.Username,
 		Password:  req.Password,
-		IP:        ip,
+		IP:        getClientIP(r),
 		UserAgent: r.Header.Get("User-Agent"),
 	})
 	if err != nil {
@@ -111,10 +121,14 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		"access_token":  output.AccessToken,
 		"refresh_token": output.RefreshToken,
 		"user": map[string]interface{}{
-			"id":       output.User.ID,
-			"username": output.User.Username,
-			"email":    output.User.Email,
-			"role":     output.User.Role,
+			"id":          output.User.ID,
+			"username":    output.User.Username,
+			"email":       output.User.Email,
+			"last_name":   output.User.LastName,
+			"first_name":  output.User.FirstName,
+			"middle_name": output.User.MiddleName,
+			"role":        output.User.Role,
+			"totp_enabled": output.User.TOTPEnabled,
 		},
 	})
 }
@@ -135,23 +149,19 @@ func (h *AuthHandler) Verify2FA(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, http.StatusBadRequest, "username and code are required")
 		return
 	}
-	ip := r.RemoteAddr
-	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		ip = fwd
-	}
 	output, err := h.authUsecase.Verify2FA(r.Context(), usecase.Verify2FAInput{
 		Username:    req.Username,
 		Code:        req.Code,
-		IP:          ip,
+		IP:          getClientIP(r),
 		UserAgent:   r.Header.Get("User-Agent"),
 		TrustDevice: req.TrustDevice,
 	})
 	if err != nil {
 		switch {
 		case errors.Is(err, usecase.ErrInvalidTOTP):
-			jsonError(w, http.StatusUnauthorized, "invalid TOTP code")
+			jsonError(w, http.StatusBadRequest, "invalid TOTP code")
 		case errors.Is(err, usecase.ErrUserNotFound):
-			jsonError(w, http.StatusUnauthorized, "user not found")
+			jsonError(w, http.StatusBadRequest, "user not found")
 		case errors.Is(err, usecase.ErrTOTPNotEnabled):
 			jsonError(w, http.StatusBadRequest, "2FA is not enabled")
 		default:
@@ -193,6 +203,74 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		"access_token":  output.AccessToken,
 		"refresh_token": output.RefreshToken,
 	})
+}
+
+func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
+	userIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	userID, err := parseUUID(userIDStr)
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	user, err := h.authUsecase.GetProfile(r.Context(), userID)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, "failed to get profile")
+		return
+	}
+	jsonData(w, http.StatusOK, map[string]interface{}{
+		"user": map[string]interface{}{
+			"id":          user.ID.String(),
+			"username":    user.Username,
+			"email":       user.Email,
+			"last_name":   user.LastName,
+			"first_name":  user.FirstName,
+			"middle_name": user.MiddleName,
+			"role":        string(user.Role),
+			"totp_enabled": user.TOTPEnabled,
+			"created_at":  user.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		},
+	})
+}
+
+type updateMeRequest struct {
+	Email      *string `json:"email,omitempty"`
+	LastName   *string `json:"last_name,omitempty"`
+	FirstName  *string `json:"first_name,omitempty"`
+	MiddleName *string `json:"middle_name,omitempty"`
+}
+
+func (h *AuthHandler) UpdateMe(w http.ResponseWriter, r *http.Request) {
+	userIDStr, _ := r.Context().Value(auth.ContextUserID).(string)
+	userID, err := parseUUID(userIDStr)
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	var req updateMeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Email == nil && req.LastName == nil && req.FirstName == nil && req.MiddleName == nil {
+		jsonError(w, http.StatusBadRequest, "at least one field to update is required")
+		return
+	}
+	if err := h.authUsecase.UpdateProfile(r.Context(), usecase.UpdateProfileInput{
+		UserID:     userID,
+		Email:      req.Email,
+		LastName:   req.LastName,
+		FirstName:  req.FirstName,
+		MiddleName: req.MiddleName,
+	}); err != nil {
+		switch {
+		case err == usecase.ErrEmailTaken:
+			jsonError(w, http.StatusConflict, "email already taken")
+		default:
+			jsonError(w, http.StatusInternalServerError, "failed to update profile")
+		}
+		return
+	}
+	jsonData(w, http.StatusOK, map[string]string{"message": "profile updated"})
 }
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {

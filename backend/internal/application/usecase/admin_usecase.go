@@ -10,10 +10,11 @@ import (
 )
 
 type AdminUsecase struct {
-	userRepo UserRepository
+	userRepo   UserRepository
 	deviceRepo DeviceRepository
-	logRepo  LogRepository
-	totp     TOTPManager
+	logRepo    LogRepository
+	totp       TOTPManager
+	hasher     PasswordHasher
 }
 
 func NewAdminUsecase(
@@ -21,12 +22,14 @@ func NewAdminUsecase(
 	deviceRepo DeviceRepository,
 	logRepo LogRepository,
 	totp TOTPManager,
+	hasher PasswordHasher,
 ) *AdminUsecase {
 	return &AdminUsecase{
 		userRepo:   userRepo,
 		deviceRepo: deviceRepo,
 		logRepo:    logRepo,
 		totp:       totp,
+		hasher:     hasher,
 	}
 }
 
@@ -121,6 +124,129 @@ func (uc *AdminUsecase) GetLogs(ctx context.Context, input GetLogsInput) (*GetLo
 		logs = []*domain.AuditLog{}
 	}
 	return &GetLogsOutput{Logs: logs, Total: total}, nil
+}
+
+type CreateUserInput struct {
+	Username   string
+	Email      string
+	LastName   string
+	FirstName  string
+	MiddleName string
+	Password   string
+	Role       domain.Role
+	ActorID    uuid.UUID
+	IP         string
+	UserAgent  string
+}
+
+func (uc *AdminUsecase) CreateUser(ctx context.Context, input CreateUserInput) (*domain.User, error) {
+	if existing, _ := uc.userRepo.GetByUsername(ctx, input.Username); existing != nil {
+		return nil, ErrUsernameTaken
+	}
+	if existing, _ := uc.userRepo.GetByEmail(ctx, input.Email); existing != nil {
+		return nil, ErrEmailTaken
+	}
+	hash, err := uc.hasher.Hash(input.Password)
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now()
+	user := &domain.User{
+		ID:           uuid.New(),
+		Username:     input.Username,
+		Email:        input.Email,
+		LastName:     input.LastName,
+		FirstName:    input.FirstName,
+		MiddleName:   input.MiddleName,
+		PasswordHash: hash,
+		Role:         input.Role,
+		TOTPEnabled:  false,
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	}
+	if err := uc.userRepo.Create(ctx, user); err != nil {
+		return nil, err
+	}
+	details, _ := json.Marshal(map[string]string{
+		"created_by": input.ActorID.String(),
+		"role":       string(input.Role),
+	})
+	uc.log(ctx, &user.ID, "admin_create_user", details)
+	return user, nil
+}
+
+type UpdateUserInput struct {
+	TargetUserID uuid.UUID
+	Username     *string
+	Email        *string
+	LastName     *string
+	FirstName    *string
+	MiddleName   *string
+	Password     *string
+	ActorID      uuid.UUID
+}
+
+func (uc *AdminUsecase) UpdateUser(ctx context.Context, input UpdateUserInput) error {
+	user, err := uc.userRepo.GetByID(ctx, input.TargetUserID)
+	if err != nil {
+		return err
+	}
+	if input.Username != nil {
+		if *input.Username != user.Username {
+			if existing, _ := uc.userRepo.GetByUsername(ctx, *input.Username); existing != nil {
+				return ErrUsernameTaken
+			}
+		}
+		user.Username = *input.Username
+	}
+	if input.Email != nil {
+		if *input.Email != user.Email {
+			if existing, _ := uc.userRepo.GetByEmail(ctx, *input.Email); existing != nil {
+				return ErrEmailTaken
+			}
+		}
+		user.Email = *input.Email
+	}
+	if input.LastName != nil {
+		user.LastName = *input.LastName
+	}
+	if input.FirstName != nil {
+		user.FirstName = *input.FirstName
+	}
+	if input.MiddleName != nil {
+		user.MiddleName = *input.MiddleName
+	}
+	if input.Password != nil {
+		hash, err := uc.hasher.Hash(*input.Password)
+		if err != nil {
+			return err
+		}
+		user.PasswordHash = hash
+	}
+	user.UpdatedAt = time.Now()
+	if err := uc.userRepo.Update(ctx, user); err != nil {
+		return err
+	}
+	details, _ := json.Marshal(map[string]string{
+		"updated_by": input.ActorID.String(),
+	})
+	uc.log(ctx, &input.TargetUserID, "admin_update_user", details)
+	return nil
+}
+
+func (uc *AdminUsecase) DeleteUser(ctx context.Context, targetUserID, actorID uuid.UUID) error {
+	if _, err := uc.userRepo.GetByID(ctx, targetUserID); err != nil {
+		return err
+	}
+	_ = uc.deviceRepo.DeleteByUserID(ctx, targetUserID)
+	if err := uc.userRepo.Delete(ctx, targetUserID); err != nil {
+		return err
+	}
+	details, _ := json.Marshal(map[string]string{
+		"deleted_by": actorID.String(),
+	})
+	uc.log(ctx, &targetUserID, "admin_delete_user", details)
+	return nil
 }
 
 func (uc *AdminUsecase) log(ctx context.Context, userID *uuid.UUID, action string, details json.RawMessage) {

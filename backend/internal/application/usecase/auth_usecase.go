@@ -28,6 +28,7 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	Update(ctx context.Context, user *domain.User) error
+	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, offset, limit int) ([]*domain.User, int, error)
 }
 
@@ -282,6 +283,44 @@ func (uc *AuthUsecase) generateTokens(user *domain.User) (*tokenPair, error) {
 		return nil, err
 	}
 	return &tokenPair{AccessToken: accessToken, RefreshToken: refreshToken}, nil
+}
+
+func (uc *AuthUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (*domain.User, error) {
+	return uc.userRepo.GetByID(ctx, userID)
+}
+
+type UpdateProfileInput struct {
+	UserID     uuid.UUID
+	Email      *string
+	LastName   *string
+	FirstName  *string
+	MiddleName *string
+}
+
+func (uc *AuthUsecase) UpdateProfile(ctx context.Context, input UpdateProfileInput) error {
+	user, err := uc.userRepo.GetByID(ctx, input.UserID)
+	if err != nil {
+		return err
+	}
+	if input.Email != nil {
+		if *input.Email != user.Email {
+			if existing, _ := uc.userRepo.GetByEmail(ctx, *input.Email); existing != nil {
+				return ErrEmailTaken
+			}
+		}
+		user.Email = *input.Email
+	}
+	if input.LastName != nil {
+		user.LastName = *input.LastName
+	}
+	if input.FirstName != nil {
+		user.FirstName = *input.FirstName
+	}
+	if input.MiddleName != nil {
+		user.MiddleName = *input.MiddleName
+	}
+	user.UpdatedAt = time.Now()
+	return uc.userRepo.Update(ctx, user)
 }
 
 func (uc *AuthUsecase) log(ctx context.Context, userID *uuid.UUID, action string, details json.RawMessage, ip, userAgent string) {

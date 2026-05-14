@@ -43,6 +43,8 @@ func (ro *Router) registerRoutes(deps *HandlerDependencies) {
 	ro.mux.HandleFunc("POST /auth/verify-2fa", deps.AuthHandler.Verify2FA)
 	ro.mux.HandleFunc("POST /auth/refresh", deps.AuthHandler.Refresh)
 	ro.mux.HandleFunc("POST /auth/logout", deps.AuthHandler.Logout)
+	ro.mux.Handle("GET /auth/me", m.Auth(http.HandlerFunc(deps.AuthHandler.Me)))
+	ro.mux.Handle("PUT /auth/me", m.Auth(http.HandlerFunc(deps.AuthHandler.UpdateMe)))
 
 	ro.mux.Handle("POST /totp/setup", m.Auth(http.HandlerFunc(deps.TOTPHandler.Setup)))
 	ro.mux.Handle("POST /totp/enable", m.Auth(http.HandlerFunc(deps.TOTPHandler.Enable)))
@@ -50,10 +52,14 @@ func (ro *Router) registerRoutes(deps *HandlerDependencies) {
 	ro.mux.Handle("GET /totp/status", m.Auth(http.HandlerFunc(deps.TOTPHandler.Status)))
 
 	adminOnly := m.Role("admin")
-	ro.mux.Handle("GET /admin/users", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ListUsers))))
-	ro.mux.Handle("PUT /admin/users/", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ChangeRole))))
-	ro.mux.Handle("POST /admin/users/", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.Reset2FA))))
-	ro.mux.Handle("GET /admin/logs", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.GetLogs))))
+	adminOrDirector := m.Role("admin", "director")
+	ro.mux.Handle("GET /admin/users", m.Auth(adminOrDirector(http.HandlerFunc(deps.AdminHandler.ListUsers))))
+	ro.mux.Handle("POST /admin/users", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.CreateUser))))
+	ro.mux.Handle("PUT /admin/users/{id}/role", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.ChangeRole))))
+	ro.mux.Handle("POST /admin/users/{id}/reset-2fa", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.Reset2FA))))
+	ro.mux.Handle("PUT /admin/users/{id}", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.UpdateUser))))
+	ro.mux.Handle("DELETE /admin/users/{id}", m.Auth(adminOnly(http.HandlerFunc(deps.AdminHandler.DeleteUser))))
+	ro.mux.Handle("GET /admin/logs", m.Auth(adminOrDirector(http.HandlerFunc(deps.AdminHandler.GetLogs))))
 
 	ro.mux.Handle("GET /static/", http.FileServer(http.FS(staticAssets())))
 	ro.mux.HandleFunc("GET /", serveIndex)

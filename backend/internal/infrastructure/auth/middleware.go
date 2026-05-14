@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 )
@@ -34,6 +35,8 @@ func (m *Middleware) Logging(next http.Handler) http.Handler {
 		ip := r.RemoteAddr
 		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
 			ip = strings.Split(fwd, ",")[0]
+		} else if host, _, err := net.SplitHostPort(ip); err == nil {
+			ip = host
 		}
 		ua := r.Header.Get("User-Agent")
 		ctx := context.WithValue(r.Context(), ContextIP, ip)
