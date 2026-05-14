@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Trash2, Smartphone } from 'lucide-react'
 
@@ -34,9 +33,13 @@ export default function AccountList({ accounts, codes, onRemove }: Props) {
                 {codes[acc.id] || '------'}
               </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => onRemove(acc.id)} className="ml-2 shrink-0">
-              <Trash2 className="h-4 w-4 text-slate-500" />
-            </Button>
+            <button
+              type="button"
+              onClick={(e) => e.stopPropagation()}
+              className="ml-2 shrink-0 rounded p-2 text-slate-500 hover:bg-slate-800 hover:text-slate-100"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
           </CardContent>
         </SwipeableCard>
       ))}
@@ -45,49 +48,48 @@ export default function AccountList({ accounts, codes, onRemove }: Props) {
 }
 
 function SwipeableCard({ children, onRemove }: { children: React.ReactNode; onRemove: () => void }) {
-  const [translateX, setTranslateX] = useState(0)
-  const [removing, setRemoving] = useState(false)
+  const [open, setOpen] = useState(false)
   const startRef = useRef(0)
-  const currentRef = useRef(0)
+  const swipingRef = useRef(false)
 
   function handleTouchStart(e: React.TouchEvent) {
     startRef.current = e.touches[0].clientX
-    currentRef.current = 0
+    swipingRef.current = false
   }
 
   function handleTouchMove(e: React.TouchEvent) {
     const dx = e.touches[0].clientX - startRef.current
-    if (dx < 0) {
-      currentRef.current = dx
-      setTranslateX(dx)
+    if (!open && dx < -20) swipingRef.current = true
+    if (swipingRef.current) {
+      if (dx < -80) setOpen(true)
+      else if (dx > 20) { setOpen(false); swipingRef.current = false }
     }
   }
 
   function handleTouchEnd() {
-    if (currentRef.current < -80) {
-      setRemoving(true)
-      setTimeout(onRemove, 200)
-    } else {
-      setTranslateX(0)
-    }
-    currentRef.current = 0
+    swipingRef.current = false
   }
-
-  if (removing) return null
 
   return (
     <div className="relative overflow-hidden rounded-lg">
-      <div className="absolute inset-y-0 right-0 flex w-20 items-center justify-center rounded-lg bg-red-900/80">
-        <Trash2 className="h-5 w-5 text-red-300" />
+      <div className="absolute inset-y-0 right-0 flex w-20 items-center justify-center rounded-lg bg-red-800">
+        <button
+          type="button"
+          onClick={onRemove}
+          className="flex h-full w-full items-center justify-center"
+        >
+          <Trash2 className="h-5 w-5 text-red-100" />
+        </button>
       </div>
       <div
-        className="relative cursor-pointer rounded-lg transition-transform duration-200 ease-out"
-        style={{ transform: `translateX(${translateX}px)` }}
+        className="relative rounded-lg transition-transform duration-200 ease-out"
+        style={{ transform: open ? 'translateX(-80px)' : 'translateX(0)' }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onClick={() => { if (open) setOpen(false) }}
       >
-        <Card className="border-slate-800 bg-slate-900/80">{children}</Card>
+        <Card className="border-slate-800 bg-slate-900">{children}</Card>
       </div>
     </div>
   )
