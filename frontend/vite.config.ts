@@ -8,28 +8,52 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const apiTarget = process.env.VITE_API_PROXY || 'http://localhost:8080'
+const isGhPages = process.env.GH_PAGES === 'true'
 
 export default defineConfig({
+  base: isGhPages ? '/TOTP-VeschiyKey/' : '/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,woff,ttf}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https?:\/\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'external-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7,
+              },
+              networkTimeoutSeconds: 3,
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'Вещий Ключ',
         short_name: 'TOTP Auth',
         description: 'Корпоративный TOTP-генератор',
         theme_color: '#0f172a',
+        background_color: '#020617',
+        display: 'standalone',
+        orientation: 'portrait',
+        categories: ['utilities', 'security'],
         icons: [
           {
-            src: '/icon-192.png',
+            src: 'icon-192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/icon-512.png',
+            src: 'icon-512.png',
             sizes: '512x512',
             type: 'image/png',
+            purpose: 'any maskable',
           },
         ],
       },
@@ -50,5 +74,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      input: isGhPages
+        ? { index: path.resolve(__dirname, 'pwa-index.html') }
+        : {
+            index: path.resolve(__dirname, 'index.html'),
+            pwa: path.resolve(__dirname, 'pwa-index.html'),
+          },
+    },
   },
 })
