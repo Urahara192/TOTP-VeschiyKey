@@ -58,7 +58,7 @@ export function useBiometric() {
           user: {
             id: userId,
             name: 'totp-user',
-            displayName: 'Владѣтель TOTP',
+            displayName: 'Владелец TOTP',
           },
           pubKeyCredParams: [
             { alg: -7, type: 'public-key' },
@@ -85,7 +85,7 @@ export function useBiometric() {
       setAuthenticated(true)
       return true
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Погрѣшность биометрии'
+      const msg = err instanceof Error ? err.message : 'Ошибка биометрии'
       if (/cancel|abort/i.test(msg)) {
         setError('Отменено')
       } else {
@@ -129,7 +129,7 @@ export function useBiometric() {
       setAuthenticated(true)
       return true
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Погрѣшность утверждения'
+      const msg = err instanceof Error ? err.message : 'Ошибка аутентификации'
       if (/cancel|abort|timeout/i.test(msg)) {
         setError(msg.includes('timeout') ? 'Время минуло' : 'Отменено')
       } else {

@@ -46,7 +46,7 @@ export default function AddAccount({ onAdd, onAdded }: Props) {
         () => {}
       )
     } catch {
-      setError('Доступъ къ зраку возбраненъ или не доступенъ')
+      setError('Доступ к камере запрещён или недоступен')
       setScanning(false)
     }
   }
@@ -69,13 +69,13 @@ export default function AddAccount({ onAdd, onAdded }: Props) {
       })
       onAdded()
     } catch {
-      setError('Неправильный QR-кодъ')
+      setError('Неправильный QR-код')
     }
   }
 
   function handleManualAdd() {
     if (!label || !secret) {
-      setError('Имя и ключь сокровенный обязательны')
+      setError('Имя и секретный ключ обязательны')
       return
     }
     onAdd({
@@ -95,18 +95,18 @@ export default function AddAccount({ onAdd, onAdded }: Props) {
       <CardContent className="p-4">
         <Tabs value={method} onValueChange={(v) => setMethod(v as 'scan' | 'manual')}>
           <TabsList className="w-full">
-            <TabsTrigger value="scan" className="flex-1"><Scan className="mr-2 h-4 w-4" /> Чести QR</TabsTrigger>
-            <TabsTrigger value="manual" className="flex-1"><Key className="mr-2 h-4 w-4" /> Руками</TabsTrigger>
+            <TabsTrigger value="scan" className="flex-1"><Scan className="mr-2 h-4 w-4" /> Сканировать QR</TabsTrigger>
+            <TabsTrigger value="manual" className="flex-1"><Key className="mr-2 h-4 w-4" /> Вручную</TabsTrigger>
           </TabsList>
 
           <TabsContent value="scan">
             {!scanning ? (
               <div className="flex flex-col items-center gap-4 py-6">
                 <p className="text-sm text-slate-400 text-center">
-                  Наведи зракъ на QR-кодъ со страницы устроения
+                  Наведите камеру на QR-код со страницы настройки
                 </p>
                 <Button onClick={startScanning}>
-                  <Scan className="mr-2 h-4 w-4" /> Отверзи зракъ
+                  <Scan className="mr-2 h-4 w-4" /> Открыть камеру
                 </Button>
                 {error && <p className="text-xs text-red-400">{error}</p>}
               </div>
@@ -114,7 +114,7 @@ export default function AddAccount({ onAdd, onAdded }: Props) {
               <div className="space-y-4">
                 <div id="qr-reader" className="mx-auto w-full max-w-sm overflow-hidden rounded-lg" />
                 <Button variant="outline" className="w-full" onClick={() => setScanning(false)}>
-                  Отрещи
+                  Отмена
                 </Button>
               </div>
             )}
@@ -127,16 +127,16 @@ export default function AddAccount({ onAdd, onAdded }: Props) {
                 <Input id="ilabel" placeholder="user@example.com" value={label} onChange={(e) => setLabel(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="isecret">Ключь сокровенный</Label>
+                <Label htmlFor="isecret">Секретный ключ</Label>
                 <Input id="isecret" placeholder="JBSWY3DPEHPK3PXP" value={secret} onChange={(e) => setSecret(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="iissuer">Датель</Label>
+                <Label htmlFor="iissuer">Издатель</Label>
                 <Input id="iissuer" placeholder="TOTP Auth" value={issuer} onChange={(e) => setIssuer(e.target.value)} />
               </div>
               {error && <p className="text-xs text-red-400">{error}</p>}
               <Button className="w-full" onClick={handleManualAdd}>
-                Приложити акаунтъ
+                Добавить аккаунт
               </Button>
             </div>
           </TabsContent>

@@ -113,8 +113,8 @@ export default function ResourcePage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <p className="text-slate-400">Ресурсъ не найденъ</p>
-          <Button className="mt-4" variant="outline" onClick={() => navigate('/dashboard')}>На преддверие</Button>
+          <p className="text-slate-400">Ресурс не найден</p>
+          <Button className="mt-4" variant="outline" onClick={() => navigate('/dashboard')}>На главную</Button>
         </div>
       </div>
     )
@@ -124,8 +124,8 @@ export default function ResourcePage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <p className="text-slate-400">Нѣтъ вхождения къ сему ресурсу</p>
-          <Button className="mt-4" variant="outline" onClick={() => navigate('/dashboard')}>На преддверие</Button>
+          <p className="text-slate-400">Нет доступа к данному ресурсу</p>
+          <Button className="mt-4" variant="outline" onClick={() => navigate('/dashboard')}>На главную</Button>
         </div>
       </div>
     )
@@ -142,7 +142,7 @@ export default function ResourcePage() {
             <span className="text-lg font-semibold text-slate-100">{page.title}</span>
           </div>
           <Button variant="outline" size="sm" onClick={() => name === 'documents' && folder ? setFolder(null) : navigate('/dashboard')} className="border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-100">
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Вспять
+            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Назад
           </Button>
         </div>
       </header>
@@ -157,9 +157,9 @@ export default function ResourcePage() {
                     <CardTitle className="text-sm">{r.period}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-1 text-xs">
-                    <div className="flex justify-between"><span className="text-slate-500">Доходъ:</span><span className="text-green-400">{r.revenue}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Издержки:</span><span className="text-red-400">{r.expenses}</span></div>
-                    <div className="flex justify-between border-t border-slate-700 pt-1"><span className="text-slate-500">Прибытокъ:</span><span className="text-slate-100 font-medium">{r.profit}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Доход:</span><span className="text-green-400">{r.revenue}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Расходы:</span><span className="text-red-400">{r.expenses}</span></div>
+                    <div className="flex justify-between border-t border-slate-700 pt-1"><span className="text-slate-500">Прибыль:</span><span className="text-slate-100 font-medium">{r.profit}</span></div>
                   </CardContent>
                 </Card>
               ))}
@@ -233,7 +233,7 @@ export default function ResourcePage() {
             {folder && (
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-slate-500 hover:text-slate-100" onClick={() => setFolder(null)}>
-                  <Home className="h-3.5 w-3.5 mr-1" /> Всѣ папки
+                  <Home className="h-3.5 w-3.5 mr-1" /> Все папки
                 </Button>
                 <ChevronRight className="h-3.5 w-3.5" />
                 <span className="text-slate-100">{docFolders[folder]?.name}</span>
@@ -272,7 +272,7 @@ export default function ResourcePage() {
                         <p className="text-xs text-slate-500">{f.type} • {f.size} • {f.updated}</p>
                       </div>
                       <Button variant="outline" size="sm" className="border-slate-700 text-slate-400 hover:text-slate-100" onClick={() => downloadDoc(f.name)}>
-                        <Download className="mr-1.5 h-3.5 w-3.5" /> Скачати
+                        <Download className="mr-1.5 h-3.5 w-3.5" /> Скачать
                       </Button>
                     </CardContent>
                   </Card>

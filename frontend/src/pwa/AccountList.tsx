@@ -14,8 +14,8 @@ export default function AccountList({ accounts, codes, onRemove }: Props) {
       <Card>
         <CardContent className="flex flex-col items-center gap-4 py-12">
           <Smartphone className="h-12 w-12 text-slate-600" />
-          <p className="text-sm text-slate-400">Акаунты не приложены</p>
-          <p className="text-xs text-slate-500">Приложи акаунтъ, прочетъ QR или вписавъ ключь сокровенный</p>
+          <p className="text-sm text-slate-400">Аккаунты не добавлены</p>
+          <p className="text-xs text-slate-500">Добавьте аккаунт, отсканировав QR или введя секретный ключ</p>
         </CardContent>
       </Card>
     )
