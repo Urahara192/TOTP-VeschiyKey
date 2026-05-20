@@ -28,7 +28,7 @@ export default function BiometricGate({ children }: Props) {
           <CardContent className="flex flex-col items-center gap-6 py-16">
             <Loader2 className="h-12 w-12 animate-spin text-slate-100" />
             <p className="text-sm text-slate-400">
-              {available && enrolled ? 'Прошение биометрии...' : 'Гружение...'}
+              {available && enrolled ? 'Запрос биометрии...' : 'Загрузка...'}
             </p>
           </CardContent>
         </Card>
@@ -51,14 +51,14 @@ export default function BiometricGate({ children }: Props) {
           <CardContent className="flex flex-col items-center gap-6 py-16">
             <Fingerprint className="h-12 w-12 text-slate-100" />
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-slate-100">Биометрическое утверждение</h2>
+              <h2 className="text-xl font-semibold text-slate-100">Биометрическая аутентификация</h2>
               <p className="mt-2 text-sm text-slate-400">
-                Подтверди естество свое для вхождения къ ключамъ TOTP
+                Подтвердите свою личность для доступа к ключам TOTP
               </p>
             </div>
             <div className="flex w-full flex-col gap-2">
               <Button className="w-full" onClick={authenticate}>
-                <Fingerprint className="mr-2 h-4 w-4" /> Приложи перстъ / Face ID
+                <Fingerprint className="mr-2 h-4 w-4" /> Приложите палец / Face ID
               </Button>
               {error && (
                 <div className="flex flex-col gap-2">
@@ -68,16 +68,16 @@ export default function BiometricGate({ children }: Props) {
                   </p>
                   <div className="flex gap-2">
                     <Button variant="outline" className="flex-1" size="sm" onClick={authenticate}>
-                      Повторити
+                      Повторить
                     </Button>
                     <Button variant="ghost" className="flex-1" size="sm" onClick={() => setSkip(true)}>
-                      Преити
+                      Пропустить
                     </Button>
                   </div>
                 </div>
               )}
               <Button variant="ghost" className="w-full text-slate-500" onClick={() => { remove(); setSkip(true) }}>
-                Смети устроение биометрии
+                Сбросить настройку биометрии
               </Button>
             </div>
           </CardContent>
@@ -93,18 +93,18 @@ export default function BiometricGate({ children }: Props) {
           <CardContent className="flex flex-col items-center gap-6 py-16">
             <Shield className="h-12 w-12 text-slate-100" />
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-slate-100">Устрой биометрию</h2>
+              <h2 className="text-xl font-semibold text-slate-100">Настройте биометрию</h2>
               <p className="mt-2 text-sm text-slate-400">
-                Защити вхождение къ ключамъ TOTP посредствомъ перста или Face ID
+                Защитите доступ к ключам TOTP с помощью отпечатка пальца или Face ID
               </p>
             </div>
             <div className="flex w-full flex-col gap-2">
               <Button className="w-full" onClick={enroll}>
-                <Fingerprint className="mr-2 h-4 w-4" /> Устроити биометрию
+                <Fingerprint className="mr-2 h-4 w-4" /> Настроить биометрию
               </Button>
               {error && <p className="text-center text-xs text-red-400">{error}</p>}
               <Button variant="ghost" className="w-full text-slate-500"                 onClick={() => setSkip(true)}>
-                Преити
+                Пропустить
               </Button>
             </div>
           </CardContent>

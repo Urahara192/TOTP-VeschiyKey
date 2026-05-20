@@ -40,7 +40,7 @@ export default function Admin() {
       setUsers(data.data.users)
       setTotal(data.data.total)
     } catch {
-      setError('Погрѣшность гружения человековъ')
+      setError('Ошибка загрузки пользователей')
     }
   }
 
@@ -49,7 +49,7 @@ export default function Admin() {
       const { data } = await api.get('/admin/logs', { params: { page, page_size: pageSize } })
       setLogs(data.data.logs)
     } catch {
-      setError('Погрѣшность гружения лѣтописей')
+      setError('Ошибка загрузки журнала')
     }
   }
 
@@ -58,7 +58,7 @@ export default function Admin() {
       await api.put(`/admin/users/${userId}/role`, { role })
       loadUsers()
     } catch {
-      setError('Погрѣшность измѣнения чина')
+      setError('Ошибка изменения роли')
     }
   }
 
@@ -68,7 +68,7 @@ export default function Admin() {
       await api.post(`/admin/users/${userId}/reset-2fa`)
       loadUsers()
     } catch {
-      setError('Погрѣшность сброса 2FA')
+      setError('Ошибка сброса 2FA')
     }
   }
 
@@ -79,7 +79,7 @@ export default function Admin() {
       loadUsers()
     } catch (err: any) {
       const msg = getErrorMessage(err)
-      throw new Error(msg || 'Погрѣшность сотворения человека')
+      throw new Error(msg || 'Ошибка создания пользователя')
     }
   }
 
@@ -90,7 +90,7 @@ export default function Admin() {
       loadUsers()
     } catch (err: any) {
       const msg = getErrorMessage(err)
-      throw new Error(msg || 'Погрѣшность обновления человека')
+      throw new Error(msg || 'Ошибка обновления пользователя')
     }
   }
 
@@ -100,7 +100,7 @@ export default function Admin() {
       await api.delete(`/admin/users/${id}`)
       loadUsers()
     } catch {
-      setError('Погрѣшность удаления человека')
+      setError('Ошибка удаления пользователя')
     }
   }
 
@@ -121,10 +121,10 @@ export default function Admin() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800">
               <ShieldAlert className="h-5 w-5 text-slate-100" />
             </div>
-            <span className="text-lg font-semibold text-slate-100">Палата воеводы</span>
+            <span className="text-lg font-semibold text-slate-100">Панель администратора</span>
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')} className="border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-100">
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Вспять
+            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Назад
           </Button>
         </div>
       </header>
@@ -138,27 +138,27 @@ export default function Admin() {
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
-            <TabsTrigger value="users">Человеки</TabsTrigger>
-            <TabsTrigger value="logs">Лѣтопись дѣяний</TabsTrigger>
+            <TabsTrigger value="users">Пользователи</TabsTrigger>
+            <TabsTrigger value="logs">Журнал аудита</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
             <Card>
               <CardHeader>
                   <div className="flex items-center justify-between">
-                  <CardTitle>Человеки ({total})</CardTitle>
+                  <CardTitle>Пользователи ({total})</CardTitle>
                   <div className="flex items-center gap-3">
                     <div className="relative w-64">
                       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                       <Input
                         className="pl-9"
-                        placeholder="Поискъ человековъ..."
+                        placeholder="Поиск пользователей..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                       />
                     </div>
                     <Button size="sm" onClick={() => setShowCreate(true)}>
-                      <Plus className="mr-1.5 h-4 w-4" /> Сотворити
+                      <Plus className="mr-1.5 h-4 w-4" /> Создать
                     </Button>
                   </div>
                 </div>
@@ -172,9 +172,9 @@ export default function Admin() {
                       <TableHead>Отчество</TableHead>
                       <TableHead>Имя</TableHead>
                       <TableHead>Почта</TableHead>
-                      <TableHead>Чинъ</TableHead>
+                      <TableHead>Роль</TableHead>
                       <TableHead>2FA</TableHead>
-                      <TableHead>Дѣяния</TableHead>
+                      <TableHead>Действия</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -192,11 +192,11 @@ export default function Admin() {
                             className="rounded border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-100"
                             disabled={u.id === user?.id}
                           >
-                             <option value="employee">Труженикъ</option>
-                             <option value="accountant">Счетоводецъ</option>
-                             <option value="analyst">Мыслитель</option>
-                             <option value="director">Старѣйшины</option>
-                             <option value="admin">Воевода</option>
+                             <option value="employee">Сотрудник</option>
+                             <option value="accountant">Бухгалтер</option>
+                             <option value="analyst">Аналитик</option>
+                             <option value="director">Руководство</option>
+                             <option value="admin">Администратор</option>
                           </select>
                         </TableCell>
                         <TableCell>
@@ -238,11 +238,11 @@ export default function Admin() {
                 </Table>
                 <div className="mt-4 flex items-center justify-between">
                   <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
-                    Назадъ
+                    Назад
                     </Button>
                     <span className="text-sm text-slate-400">Страница {page}</span>
                     <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)} disabled={page * pageSize >= total}>
-                      Вперёдъ
+                      Вперёд
                   </Button>
                 </div>
               </CardContent>
@@ -252,17 +252,17 @@ export default function Admin() {
           <TabsContent value="logs">
             <Card>
               <CardHeader>
-                <CardTitle>Лѣтопись дѣяний</CardTitle>
+                <CardTitle>Журнал аудита</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Время</TableHead>
-                      <TableHead>Человѣкъ</TableHead>
-                      <TableHead>Дѣяние</TableHead>
+                      <TableHead>Пользователь</TableHead>
+                      <TableHead>Действие</TableHead>
                       <TableHead>IP</TableHead>
-                      <TableHead>Подробии</TableHead>
+                      <TableHead>Детали</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -284,7 +284,7 @@ export default function Admin() {
                     {logs.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center text-slate-500">
-                          Лѣтописи не найдены
+                          Журнал пуст
                         </TableCell>
                       </TableRow>
                     )}
@@ -297,7 +297,7 @@ export default function Admin() {
 
         {showCreate && (
           <UserFormModal
-            title="Сотворение человека"
+            title="Создание пользователя"
             onClose={() => setShowCreate(false)}
             onSubmit={handleCreateUser}
           />
@@ -305,7 +305,7 @@ export default function Admin() {
 
         {editingUser && (
           <UserFormModal
-            title="Правка человека"
+            title="Редактирование пользователя"
             user={editingUser}
             onClose={() => setEditingUser(null)}
             onSubmit={(data) => handleUpdateUser(editingUser.id, data)}
@@ -340,11 +340,11 @@ function UserFormModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!user && (!username || !email || !password)) {
-      setError('Исполни вся обязательная поля')
+      setError('Заполните все обязательные поля')
       return
     }
     if (user && !username && !email && !lastName && !firstName && !middleName && !password) {
-      setError('Заполни хотя бы едино поле')
+      setError('Заполните хотя бы одно поле')
       return
     }
     setSubmitting(true)
@@ -360,7 +360,7 @@ function UserFormModal({
       if (!user) payload.role = role
       await onSubmit(payload)
     } catch (err: any) {
-      setError(err.message || 'Погрѣшность')
+      setError(err.message || 'Ошибка')
     } finally {
       setSubmitting(false)
     }
@@ -427,7 +427,7 @@ function UserFormModal({
             </div>
             <div>
               <label className="mb-1 block text-sm text-slate-400">
-                {user ? 'Новый пароль (остави пусто, дабы не мѣняти)' : 'Пароль'}
+                {user ? 'Новый пароль (оставьте пустым, чтобы не менять)' : 'Пароль'}
               </label>
               <Input
                 type="password"
@@ -439,26 +439,26 @@ function UserFormModal({
             </div>
             {!user && (
               <div>
-                <label className="mb-1 block text-sm text-slate-400">Чинъ</label>
+                <label className="mb-1 block text-sm text-slate-400">Роль</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100"
                 >
-                  <option value="employee">Труженикъ</option>
-                  <option value="accountant">Счетоводецъ</option>
-                  <option value="analyst">Мыслитель</option>
-                  <option value="director">Старѣйшины</option>
-                  <option value="admin">Воевода</option>
+                  <option value="employee">Сотрудник</option>
+                  <option value="accountant">Бухгалтер</option>
+                  <option value="analyst">Аналитик</option>
+                  <option value="director">Руководство</option>
+                  <option value="admin">Администратор</option>
                 </select>
               </div>
             )}
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="outline" onClick={onClose} className="border-slate-700 text-slate-400">
-                Отрещи
+                Отмена
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting ? 'Сохранение...' : 'Сохранити'}
+                {submitting ? 'Сохранение...' : 'Сохранить'}
               </Button>
             </div>
           </form>

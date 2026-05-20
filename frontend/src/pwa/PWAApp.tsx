@@ -33,14 +33,14 @@ export default function PWAApp() {
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Smartphone className="h-5 w-5 text-slate-100" />
-            <h1 className="text-lg font-semibold text-slate-100">Вещiй Ключъ</h1>
+            <h1 className="text-lg font-semibold text-slate-100">Вещий ключ</h1>
           </div>
         </header>
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full">
           <TabsTrigger value="codes" className="flex-1">Ключи</TabsTrigger>
-          <TabsTrigger value="add" className="flex-1">Приложити акаунтъ</TabsTrigger>
+          <TabsTrigger value="add" className="flex-1">Добавить аккаунт</TabsTrigger>
           </TabsList>
 
           <TabsContent value="codes">

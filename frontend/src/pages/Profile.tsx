@@ -34,7 +34,7 @@ export default function Profile() {
       setMiddleName(u.middle_name || '')
       setEmail(u.email || '')
     } catch {
-      setError('Погрѣшность гружения профиля')
+      setError('Ошибка загрузки профиля')
     }
   }
 
@@ -53,7 +53,7 @@ export default function Profile() {
       setSuccess('Данные сохранены')
       loadProfile()
     } catch (err: any) {
-      setError(getErrorMessage(err) || 'Погрѣшность сохранения')
+      setError(getErrorMessage(err) || 'Ошибка сохранения')
     } finally {
       setSaving(false)
     }
@@ -67,10 +67,10 @@ export default function Profile() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800">
               <User className="h-5 w-5 text-slate-100" />
             </div>
-            <span className="text-lg font-semibold text-slate-100">Личная вѣдомость</span>
+            <span className="text-lg font-semibold text-slate-100">Личный профиль</span>
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')} className="border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-100">
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Вспять
+            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Назад
           </Button>
         </div>
       </header>
@@ -99,7 +99,7 @@ export default function Profile() {
                   <p className="text-sm font-medium text-slate-100">{user?.username}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Чинъ</p>
+                  <p className="text-xs text-slate-500">Роль</p>
                   <p className="text-sm font-medium text-slate-100">{roleLabel(user?.role || '')}</p>
                 </div>
               </div>
@@ -111,7 +111,7 @@ export default function Profile() {
                 <Input
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Ивановъ"
+                  placeholder="Иванов"
                   className="border-slate-700 bg-slate-800 text-slate-100"
                 />
               </div>
@@ -120,7 +120,7 @@ export default function Profile() {
                 <Input
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Иванъ"
+                  placeholder="Иван"
                   className="border-slate-700 bg-slate-800 text-slate-100"
                 />
               </div>
@@ -129,7 +129,7 @@ export default function Profile() {
                 <Input
                   value={middleName}
                   onChange={(e) => setMiddleName(e.target.value)}
-                  placeholder="Ивановичъ"
+                  placeholder="Иванович"
                   className="border-slate-700 bg-slate-800 text-slate-100"
                 />
               </div>
@@ -145,7 +145,7 @@ export default function Profile() {
               </div>
               <div className="flex justify-end pt-2">
                 <Button type="submit" disabled={saving}>
-                  <Save className="mr-1.5 h-4 w-4" /> {saving ? 'Сохранение...' : 'Сохранити'}
+                  <Save className="mr-1.5 h-4 w-4" /> {saving ? 'Сохранение...' : 'Сохранить'}
                 </Button>
               </div>
             </form>

@@ -31,7 +31,7 @@ export default function Login() {
         navigate('/dashboard')
       }
     } catch (err: any) {
-      setError(getErrorMessage(err) || 'Погрѣшность вхождения')
+      setError(getErrorMessage(err) || 'Ошибка входа')
     } finally {
       setLoading(false)
     }
@@ -50,7 +50,7 @@ export default function Login() {
         navigate('/dashboard')
       }
     } catch (err: any) {
-      setError(getErrorMessage(err) || 'Погрѣшность записи')
+      setError(getErrorMessage(err) || 'Ошибка регистрации')
     } finally {
       setLoading(false)
     }
@@ -63,9 +63,9 @@ export default function Login() {
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-800">
             <Shield className="h-6 w-6 text-slate-100" />
           </div>
-          <CardTitle>Корпоративное преддверие</CardTitle>
+          <CardTitle>Корпоративный портал</CardTitle>
           <CardDescription>
-            {mode === 'login' ? 'Войди для вхождения къ корпоративнымъ богатствамъ' : 'Сотвори новый акаунтъ'}
+            {mode === 'login' ? 'Войдите в корпоративный портал' : 'Создать новый аккаунт'}
           </CardDescription>
         </CardHeader>
         <form onSubmit={mode === 'login' ? handleLogin : handleRegister}>
@@ -92,10 +92,10 @@ export default function Login() {
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Повремени...' : mode === 'login' ? 'Войти' : 'Сотворити акаунтъ'}
+              {loading ? 'Загрузка...' : mode === 'login' ? 'Войти' : 'Создать аккаунт'}
             </Button>
             <Button type="button" variant="link" size="sm" className="text-xs" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}>
-              {mode === 'login' ? 'Нѣтъ акаунта? Записатися' : 'Уже есть акаунтъ? Войти'}
+              {mode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
             </Button>
           </CardFooter>
         </form>

@@ -11,23 +11,23 @@ export function jwtDecode(token: string) {
 }
 
 const errorMessages: Record<string, string> = {
-  'invalid credentials': 'Неправое имя или пароль',
-  'invalid TOTP code': 'Неправый ключь подтверждения',
+  'invalid credentials': 'Неверное имя или пароль',
+  'invalid TOTP code': 'Неверный код подтверждения',
   'username already taken': 'Имя уже занято',
   'email already taken': 'Почта уже занята',
-  'invalid request body': 'Неправильный запросъ',
-  'username and password are required': 'Впиши имя и пароль',
-  'username, email, and password are required': 'Исполни вся поля',
-  'user not found': 'Человѣкъ не найденъ',
+  'invalid request body': 'Неправильный запрос',
+  'username and password are required': 'Введите имя и пароль',
+  'username, email, and password are required': 'Заполните все поля',
+  'user not found': 'Пользователь не найден',
   '2FA is not enabled': '2FA не включена',
-  'registration failed': 'Погрѣшность записи',
-  'login failed': 'Погрѣшность вхождения',
+  'registration failed': 'Ошибка регистрации',
+  'login failed': 'Ошибка входа',
   'refresh token required': 'Требуется обновление токена',
-  'invalid or expired refresh token': 'Сидѣние минуло, войди заново',
-  'verification failed': 'Погрѣшность проверки ключа',
-  'invalid token': 'Недействительный токенъ',
-  'unauthorized': 'Не уполномоченъ',
-  'forbidden': 'Вхождение возбранено',
+  'invalid or expired refresh token': 'Сессия истекла, войдите заново',
+  'verification failed': 'Ошибка проверки кода',
+  'invalid token': 'Недействительный токен',
+  'unauthorized': 'Не авторизован',
+  'forbidden': 'Доступ запрещён',
 }
 
 export function getErrorMessage(err: any): string {
@@ -37,11 +37,11 @@ export function getErrorMessage(err: any): string {
 }
 
 const roleLabels: Record<string, string> = {
-  admin: 'Воевода',
-  accountant: 'Счетоводецъ',
-  employee: 'Труженикъ',
-  director: 'Старѣйшины',
-  analyst: 'Мыслитель',
+  admin: 'Администратор',
+  accountant: 'Бухгалтер',
+  employee: 'Сотрудник',
+  director: 'Руководство',
+  analyst: 'Аналитик',
 }
 
 export function roleLabel(role: string): string {

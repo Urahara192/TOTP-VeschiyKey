@@ -72,24 +72,24 @@ function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard icon={Users} label="Всѣхъ человековъ" value={String(stats.users)} color="bg-blue-600" />
+        <StatCard icon={Users} label="Всего пользователей" value={String(stats.users)} color="bg-blue-600" />
         <StatCard icon={Activity} label="2FA включена" value={String(stats.with2fa)} sub={`из ${stats.users}`} color="bg-green-600" />
-        <StatCard icon={Shield} label="Безъ 2FA" value={String(stats.users - stats.with2fa)} sub="нуждаются въ устроении" color="bg-yellow-600" />
+        <StatCard icon={Shield} label="Без 2FA" value={String(stats.users - stats.with2fa)} sub="нуждаются в настройке" color="bg-yellow-600" />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Button variant="outline" className="h-20 border-slate-700 bg-slate-900/50 text-slate-100 hover:bg-slate-800 hover:border-slate-600" onClick={() => navigate('/admin')}>
-          <Settings className="mr-3 h-5 w-5" />           <span className="text-left"><span className="block font-medium">Управление человеками</span><span className="block text-xs text-slate-500 font-normal">Сотворение, правка, чины</span></span>
+          <Settings className="mr-3 h-5 w-5" />           <span className="text-left"><span className="block font-medium">Управление пользователями</span><span className="block text-xs text-slate-500 font-normal">Создание, редактирование, роли</span></span>
         </Button>
         <Button variant="outline" className="h-20 border-slate-700 bg-slate-900/50 text-slate-100 hover:bg-blue-900/20 hover:border-blue-700 hover:text-blue-400" onClick={() => navigate('/admin?tab=logs')}>
-          <BarChart3 className="mr-3 h-5 w-5" /> <span className="text-left"><span className="block font-medium">Лѣтопись дѣяний</span><span className="block text-xs text-slate-500 font-normal">Зрѣние дѣяний человеческихъ</span></span>
+          <BarChart3 className="mr-3 h-5 w-5" /> <span className="text-left"><span className="block font-medium">Журнал аудита</span><span className="block text-xs text-slate-500 font-normal">Просмотр действий пользователей</span></span>
         </Button>
       </div>
 
       {recentUsers.length > 0 && (
         <Card className="border-slate-800 bg-slate-900/50">
           <CardHeader>
-            <CardTitle className="text-sm text-slate-100">Послѣдние человеки</CardTitle>
+            <CardTitle className="text-sm text-slate-100">Последние пользователи</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -97,7 +97,7 @@ function AdminDashboard() {
                 <TableRow>
                   <TableHead>Имя</TableHead>
                   <TableHead>Почта</TableHead>
-                  <TableHead>Чинъ</TableHead>
+                  <TableHead>Роль</TableHead>
                   <TableHead>2FA</TableHead>
                 </TableRow>
               </TableHeader>
@@ -150,7 +150,7 @@ function AccountantDashboard() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={TrendingUp} label="Доходъ за мѣсяцъ" value="13 600 000 ₽" sub="+8.3% к прошлому" color="bg-green-600" />
+        <StatCard icon={TrendingUp} label="Доход за месяц" value="13 600 000 ₽" sub="+8.3% к прошлому" color="bg-green-600" />
         <StatCard icon={Receipt} label="Счетов выставлено" value="28" sub="в этом месяце" color="bg-blue-600" />
         <StatCard icon={Clock} label="Ожидают оплаты" value="6" sub="на сумму 1.2M ₽" color="bg-yellow-600" />
         <StatCard icon={CheckCircle} label="Оплачено" value="22" sub="в этом месяце" color="bg-emerald-600" />
@@ -386,7 +386,7 @@ function DirectorDashboard() {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Users} label="Всего сотрудников" value={String(stats.users)} sub="в штате" color="bg-blue-600" />
-        <StatCard icon={TrendingUp} label="Доходъ (четверть)" value="52 000 000 ₽" sub="+12.4% к прошлому" color="bg-green-600" />
+        <StatCard icon={TrendingUp} label="Доход (квартал)" value="52 000 000 ₽" sub="+12.4% к прошлому" color="bg-green-600" />
         <StatCard icon={Activity} label="Активных проектов" value="7" sub="в работе" color="bg-purple-600" />
         <StatCard icon={Clock} label="Средний чек" value="420 000 ₽" sub="за последний месяц" color="bg-yellow-600" />
       </div>
@@ -531,9 +531,9 @@ function AnalystDashboard() {
             <TableHeader>
               <TableRow>
                 <TableHead>Квартал</TableHead>
-                <TableHead>Доходъ</TableHead>
-                <TableHead>Издержки</TableHead>
-                <TableHead>Прибытокъ</TableHead>
+                <TableHead>Доход</TableHead>
+                <TableHead>Расходы</TableHead>
+                <TableHead>Прибыль</TableHead>
                 <TableHead>Прибыльность</TableHead>
               </TableRow>
             </TableHeader>
@@ -585,7 +585,7 @@ export default function Dashboard() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-800">
               <Shield className="h-5 w-5 text-slate-100" />
             </div>
-             <span className="text-lg font-semibold text-slate-100">Корпоративное преддверие</span>
+             <span className="text-lg font-semibold text-slate-100">Корпоративный портал</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-center">
@@ -606,7 +606,7 @@ export default function Dashboard() {
               onClick={handleLogout}
               className="border-slate-700 text-slate-400 hover:border-red-800 hover:bg-red-900/20 hover:text-red-400"
             >
-              <LogOut className="mr-1.5 h-3.5 w-3.5" /> Изыти
+              <LogOut className="mr-1.5 h-3.5 w-3.5" /> Выйти
             </Button>
           </div>
         </div>
@@ -616,7 +616,7 @@ export default function Dashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-slate-100">Добро пожаловати, {user?.first_name || user?.username}!</h2>
+              <h2 className="text-2xl font-bold text-slate-100">Добро пожаловать, {user?.first_name || user?.username}!</h2>
               <p className="mt-1 text-sm text-slate-500">{roleGreetings[user?.role || '']}</p>
             </div>
           </div>
@@ -628,10 +628,10 @@ export default function Dashboard() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-900/40">
                     <Shield className="h-4 w-4 text-yellow-400" />
                   </div>
-                  <p className="text-sm font-medium text-yellow-400">Двухвратное утверждение не включено</p>
+                  <p className="text-sm font-medium text-yellow-400">Двухфакторная аутентификация не включена</p>
                 </div>
                 <Button onClick={() => navigate('/setup-2fa')} size="sm" className="bg-yellow-600 text-white hover:bg-yellow-500">
-                  Включити 2FA
+                  Включить 2FA
                 </Button>
               </CardContent>
             </Card>
