@@ -1,6 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
-  <rect width="192" height="192" rx="32" fill="#1A0F0A"/>
-  <circle cx="72" cy="104" r="28" fill="none" stroke="#C9A84C" stroke-width="6"/>
-  <circle cx="72" cy="104" r="10" fill="#C9A84C"/>
-  <path d="M96 100l60 60M96 100l-20 20M140 56l20 20M96 100l12-12M116 80l12 12" stroke="#C9A84C" stroke-width="6" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Forged Slavic key icon">
+  <rect width="512" height="512" fill="#1c0d09"/>
+  <g fill="#d7ae48">
+    <path fill-rule="evenodd" d="
+      M176 169
+      a87 87 0 1 0 0 174
+      a87 87 0 1 0 0-174
+      Z
+      M176 186
+      a70 70 0 1 1 0 140
+      a70 70 0 1 1 0-140
+      Z
+      M176 209
+      a47 47 0 1 0 0 94
+      a47 47 0 1 0 0-94
+      Z
+      M176 218
+      a38 38 0 1 1 0 76
+      a38 38 0 1 1 0-76
+      Z"/>
+    <circle cx="217" cy="215" r="5"/>
+    <circle cx="135" cy="215" r="5"/>
+    <circle cx="135" cy="297" r="5"/>
+    <circle cx="217" cy="297" r="5"/>
+    <rect x="151" y="249" width="50" height="14" rx="7"/>
+    <rect x="235" y="240" width="41" height="32" rx="14"/>
+    <rect x="260" y="238" width="150" height="36" rx="16"/>
+    <rect x="398" y="232" width="32" height="48" rx="10"/>
+    <rect x="405" y="274" width="25" height="64" rx="8"/>
+    <rect x="360" y="313" width="70" height="25" rx="8"/>
+    <rect x="350" y="286" width="28" height="52" rx="8"/>
+  </g>
 </svg>
